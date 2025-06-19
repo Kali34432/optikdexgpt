@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Rocket, Code, DollarSign, Shield, Zap, Upload, Sparkles, AlertTriangle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Rocket, Code, DollarSign, Shield, Zap, Upload, Sparkles, AlertTriangle, Globe, TrendingUp, Bot, Megaphone, Check } from 'lucide-react';
 
 export default function MemeCreator() {
   const [step, setStep] = useState(1);
@@ -11,6 +11,96 @@ export default function MemeCreator() {
     decimals: '9',
     image: null,
   });
+
+  // Add-on states
+  const [includeWebsiteBuilder, setIncludeWebsiteBuilder] = useState(false);
+  const [includeViralGPT, setIncludeViralGPT] = useState(false);
+  const [includeSocialMediaPosts, setIncludeSocialMediaPosts] = useState(false);
+  const [includeAdvancedLLM, setIncludeAdvancedLLM] = useState(false);
+  const [includePromotionGPT, setIncludePromotionGPT] = useState(false);
+  const [isUltimateBundleSelected, setIsUltimateBundleSelected] = useState(false);
+
+  // Handle Ultimate Bundle selection
+  useEffect(() => {
+    if (isUltimateBundleSelected) {
+      setIncludeWebsiteBuilder(true);
+      setIncludeViralGPT(true);
+      setIncludeSocialMediaPosts(true);
+      setIncludeAdvancedLLM(true);
+      setIncludePromotionGPT(true);
+    }
+  }, [isUltimateBundleSelected]);
+
+  // Handle individual add-on deselection
+  useEffect(() => {
+    if (isUltimateBundleSelected && (!includeWebsiteBuilder || !includeViralGPT || !includeSocialMediaPosts || !includeAdvancedLLM || !includePromotionGPT)) {
+      setIsUltimateBundleSelected(false);
+    }
+  }, [includeWebsiteBuilder, includeViralGPT, includeSocialMediaPosts, includeAdvancedLLM, includePromotionGPT, isUltimateBundleSelected]);
+
+  // Calculate total cost
+  const calculateTotalCost = () => {
+    if (isUltimateBundleSelected) {
+      return 799.99;
+    }
+    
+    let total = 499.99; // Base price
+    if (includeWebsiteBuilder) total += 99.99;
+    if (includeViralGPT) total += 99.99;
+    if (includeSocialMediaPosts) total += 99.99;
+    if (includeAdvancedLLM) total += 99.99;
+    if (includePromotionGPT) total += 99.99;
+    
+    return total;
+  };
+
+  const addOns = [
+    {
+      id: 'websiteBuilder',
+      name: 'Optik Website Builder AI',
+      description: 'AI-powered website creation for your meme coin project',
+      price: 99.99,
+      icon: Globe,
+      state: includeWebsiteBuilder,
+      setState: setIncludeWebsiteBuilder,
+    },
+    {
+      id: 'viralGPT',
+      name: 'Optik Viral GPT',
+      description: 'Advanced viral marketing strategies and campaign planning',
+      price: 99.99,
+      icon: TrendingUp,
+      state: includeViralGPT,
+      setState: setIncludeViralGPT,
+    },
+    {
+      id: 'socialMediaPosts',
+      name: 'Viral Social Media Posts',
+      description: 'AI-generated viral content for all major social platforms',
+      price: 99.99,
+      icon: Megaphone,
+      state: includeSocialMediaPosts,
+      setState: setIncludeSocialMediaPosts,
+    },
+    {
+      id: 'advancedLLM',
+      name: 'Optik GPT Advanced LLM',
+      description: 'Predictive trading analysis and advanced market strategies',
+      price: 99.99,
+      icon: Bot,
+      state: includeAdvancedLLM,
+      setState: setIncludeAdvancedLLM,
+    },
+    {
+      id: 'promotionGPT',
+      name: 'Meme Coin Promotion GPT',
+      description: 'Comprehensive promotion and community building tools',
+      price: 99.99,
+      icon: Sparkles,
+      state: includePromotionGPT,
+      setState: setIncludePromotionGPT,
+    },
+  ];
 
   const steps = [
     { id: 1, title: 'Token Details', icon: Sparkles },
@@ -204,7 +294,7 @@ export default function MemeCreator() {
                 <div>
                   <p className="text-blue-400 font-medium">Launch Package Included</p>
                   <p className="text-blue-300/80 text-sm mt-1">
-                    Your $99.99 payment includes minimum liquidity funding and launch support.
+                    Your payment includes minimum liquidity funding and launch support.
                   </p>
                 </div>
               </div>
@@ -237,8 +327,80 @@ export default function MemeCreator() {
                   <span className="text-white">{tokenData.totalSupply || 'Not set'}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Launch Cost:</span>
-                  <span className="text-green-400 font-semibold">$99.99</span>
+                  <span className="text-gray-400">Base Launch Cost:</span>
+                  <span className="text-green-400 font-semibold">$499.99</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Optional Add-ons Section */}
+            <div className="bg-gray-700/30 rounded-xl p-6 border border-gray-600/30">
+              <h4 className="text-lg font-semibold text-white mb-4">Optional AI-Powered Add-ons</h4>
+              
+              {/* Ultimate Bundle Option */}
+              <div className="mb-6 p-4 bg-gradient-to-r from-purple-600/10 to-pink-600/10 border border-purple-500/20 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="checkbox"
+                      id="ultimateBundle"
+                      checked={isUltimateBundleSelected}
+                      onChange={(e) => setIsUltimateBundleSelected(e.target.checked)}
+                      className="w-5 h-5 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500 focus:ring-2"
+                    />
+                    <div>
+                      <label htmlFor="ultimateBundle" className="text-lg font-semibold text-white cursor-pointer">
+                        Ultimate Creator Bundle
+                      </label>
+                      <p className="text-purple-300 text-sm">Get all AI tools + monthly access</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-2xl font-bold text-purple-400">$799.99</p>
+                    <p className="text-purple-300 text-sm">+ $99.99/month</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Individual Add-ons */}
+              <div className="space-y-3">
+                {addOns.map((addon) => {
+                  const Icon = addon.icon;
+                  return (
+                    <div key={addon.id} className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <input
+                          type="checkbox"
+                          id={addon.id}
+                          checked={addon.state}
+                          onChange={(e) => addon.setState(e.target.checked)}
+                          disabled={isUltimateBundleSelected}
+                          className="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-2 disabled:opacity-50"
+                        />
+                        <Icon className="w-5 h-5 text-blue-400" />
+                        <div>
+                          <label htmlFor={addon.id} className="text-white font-medium cursor-pointer">
+                            {addon.name}
+                          </label>
+                          <p className="text-gray-400 text-sm">{addon.description}</p>
+                        </div>
+                      </div>
+                      <span className="text-green-400 font-semibold">${addon.price}</span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Total Cost Display */}
+              <div className="mt-6 p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
+                <div className="flex justify-between items-center">
+                  <span className="text-lg font-semibold text-white">Total Cost:</span>
+                  <div className="text-right">
+                    <span className="text-2xl font-bold text-green-400">${calculateTotalCost().toFixed(2)}</span>
+                    {isUltimateBundleSelected && (
+                      <p className="text-green-300 text-sm">+ $99.99/month recurring</p>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -310,7 +472,7 @@ export default function MemeCreator() {
             {step === 1 && "Configure your meme coin's basic properties"}
             {step === 2 && "Set up smart contract security features"}
             {step === 3 && "Configure liquidity pool and funding"}
-            {step === 4 && "Review and launch your token"}
+            {step === 4 && "Review and launch your token with optional AI tools"}
           </p>
         </div>
 
@@ -336,7 +498,7 @@ export default function MemeCreator() {
           ) : (
             <button className="px-8 py-3 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-green-500/25 flex items-center space-x-2">
               <Rocket className="w-5 h-5" />
-              <span>Launch Token ($99.99)</span>
+              <span>Launch Token (${calculateTotalCost().toFixed(2)})</span>
             </button>
           )}
         </div>

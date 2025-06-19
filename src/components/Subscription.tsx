@@ -52,22 +52,27 @@ export default function Subscription() {
     },
     {
       id: 'launch',
-      name: 'Launch Package',
-      price: '$99.99',
-      period: 'one-time',
-      description: 'Complete token launch with liquidity',
+      name: 'Ultimate Creator Bundle',
+      price: '$799.99',
+      period: 'one-time + $99.99/month',
+      description: 'Complete token launch with all AI tools',
       features: [
         'Everything in Pro Creator',
         'Token creation & deployment',
         'Minimum liquidity funding',
         'OPTK backing support',
+        'Optik Website Builder AI',
+        'Optik Viral GPT marketing',
+        'Viral Social Media Posts',
+        'Advanced LLM trading analysis',
+        'Meme Coin Promotion GPT',
         'Launch marketing boost',
         'Dedicated launch support',
         'Post-launch monitoring',
-        '30-day premium support',
+        'Ongoing monthly AI access',
       ],
       limitations: [],
-      buttonText: 'Launch Token',
+      buttonText: 'Get the Bundle',
       buttonClass: 'bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white',
       icon: Zap,
       popular: false,
@@ -100,7 +105,7 @@ export default function Subscription() {
           Choose Your <span className="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">OptikCoin</span> Plan
         </h1>
         <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-          From free exploration to professional meme coin creation, we have the perfect plan for your crypto journey.
+          From free exploration to professional meme coin creation with AI-powered tools, we have the perfect plan for your crypto journey.
         </p>
       </div>
 
@@ -247,10 +252,11 @@ export default function Subscription() {
         <h2 className="text-2xl font-bold text-white mb-6 text-center">Frequently Asked Questions</h2>
         <div className="space-y-6">
           <div>
-            <h3 className="text-lg font-semibold text-white mb-2">What's included in the Launch Package?</h3>
+            <h3 className="text-lg font-semibold text-white mb-2">What's included in the Ultimate Creator Bundle?</h3>
             <p className="text-gray-400">
-              The Launch Package includes token creation, smart contract deployment, minimum liquidity funding, 
-              OPTK backing support, and 30 days of premium support to ensure a successful launch.
+              The Ultimate Creator Bundle includes token creation, smart contract deployment, minimum liquidity funding, 
+              OPTK backing support, all five AI-powered tools (Website Builder, Viral GPT, Social Media Posts, Advanced LLM, Promotion GPT), 
+              and ongoing monthly access to these premium features.
             </p>
           </div>
           
@@ -265,8 +271,8 @@ export default function Subscription() {
           <div>
             <h3 className="text-lg font-semibold text-white mb-2">Can I upgrade or downgrade my plan?</h3>
             <p className="text-gray-400">
-              Yes, you can upgrade to Pro Creator at any time. The Launch Package is a one-time purchase 
-              that can be added to any subscription level.
+              Yes, you can upgrade to Pro Creator at any time. The Ultimate Creator Bundle is a comprehensive package 
+              that can be purchased separately or added to any subscription level.
             </p>
           </div>
         </div>
