@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { Send, Bot, User, Sparkles } from 'lucide-react';
+import { useWallet } from '@solana/wallet-adapter-react';
+
+const { publicKey, connected, signTransaction } = useWallet();
 
 type Message = {
   type: 'bot' | 'user';
