@@ -1,26 +1,13 @@
-import React, { FC, ReactNode, useMemo } from 'react';
-import {
-  ConnectionProvider,
-  WalletProvider,
-} from '@solana/wallet-adapter-react';
-import {
-  PhantomWalletAdapter,
-} from '@solana/wallet-adapter-wallets';
-import {
-  WalletModalProvider,
-} from '@solana/wallet-adapter-react-ui';
-import { clusterApiUrl } from '@solana/web3.js';
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './App.tsx';
+import './index.css';
+import { WalletProviderWrapper } from './components/WalletProviderWrapper';
 
-export const WalletProviderWrapper: FC<{ children: ReactNode }> = ({ children }) => {
-  const network = 'mainnet-beta';
-  const endpoint = useMemo(() => clusterApiUrl(network), [network]);
-  const wallets = useMemo(() => [new PhantomWalletAdapter()], []);
-
-  return (
-    <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={wallets} autoConnect>
-        <WalletModalProvider>{children}</WalletModalProvider>
-      </WalletProvider>
-    </ConnectionProvider>
-  );
-};
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <WalletProviderWrapper>
+      <App />
+    </WalletProviderWrapper>
+  </StrictMode>
+);
