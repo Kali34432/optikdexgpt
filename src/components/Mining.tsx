@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Pickaxe, Zap, TrendingUp, Settings, Play, Pause, Award } from 'lucide-react';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { Pickaxe, Zap, TrendingUp, Settings, Play, Pause, Award, Wallet, ExternalLink, Send, Download } from 'lucide-react';
 
 export default function Mining() {
+  const { connected, publicKey } = useWallet();
   const [isMining, setIsMining] = useState(false);
   const [hashRate, setHashRate] = useState(0);
   const [earnings, setEarnings] = useState(0);
@@ -52,6 +54,36 @@ export default function Mining() {
     { label: 'Active Miners', value: '2,139', icon: Award },
   ];
 
+  const handleConnectWallet = () => {
+    if (!connected) {
+      // Trigger wallet connection modal
+      document.querySelector('.wallet-adapter-button-trigger button')?.click();
+    }
+  };
+
+  const handleClaimRewards = () => {
+    if (!connected) {
+      handleConnectWallet();
+      return;
+    }
+    // Simulate claiming rewards
+    alert(`Claiming ${earnings.toFixed(6)} OPTK to your wallet: ${publicKey?.toString().slice(0, 8)}...`);
+  };
+
+  const handleWithdrawToWallet = () => {
+    if (!connected) {
+      handleConnectWallet();
+      return;
+    }
+    // Simulate withdrawal
+    alert(`Withdrawing mining rewards to OPTIK wallet: ${publicKey?.toString().slice(0, 8)}...`);
+  };
+
+  const handleOpenOptikWallet = () => {
+    // Open OPTIK wallet in new tab (placeholder URL)
+    window.open('https://wallet.optikcoin.com', '_blank');
+  };
+
   return (
     <div className="max-w-6xl mx-auto space-y-8">
       {/* Header */}
@@ -66,6 +98,28 @@ export default function Mining() {
           Mine OPTK tokens to support the network and earn rewards
         </p>
       </div>
+
+      {/* Wallet Connection Status */}
+      {!connected && (
+        <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <Wallet className="w-6 h-6 text-amber-400" />
+              <div>
+                <h3 className="text-amber-400 font-semibold">Connect Your OPTIK Wallet</h3>
+                <p className="text-amber-300/80 text-sm">Connect your wallet to start mining and claim rewards</p>
+              </div>
+            </div>
+            <button
+              onClick={handleConnectWallet}
+              className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 flex items-center space-x-2"
+            >
+              <Wallet className="w-5 h-5" />
+              <span>Connect Wallet</span>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Mining Control Panel */}
       <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-8">
@@ -190,7 +244,7 @@ export default function Mining() {
         </div>
       </div>
 
-      {/* Mining Rewards */}
+      {/* Mining Rewards with Wallet Integration */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6">
           <h3 className="text-xl font-bold text-white mb-4">Mining Rewards</h3>
@@ -213,39 +267,92 @@ export default function Mining() {
             </div>
           </div>
           
-          <button className="w-full mt-4 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-semibold py-3 rounded-lg transition-all duration-200">
-            Claim Rewards
-          </button>
+          <div className="space-y-3 mt-6">
+            <button 
+              onClick={handleClaimRewards}
+              className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2"
+            >
+              <Download className="w-5 h-5" />
+              <span>Claim Rewards</span>
+            </button>
+            
+            <button 
+              onClick={handleWithdrawToWallet}
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2"
+            >
+              <Send className="w-5 h-5" />
+              <span>Withdraw to Wallet</span>
+            </button>
+          </div>
         </div>
 
         <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6">
-          <h3 className="text-xl font-bold text-white mb-4">Mining Hardware</h3>
-          <div className="space-y-4">
-            <div className="p-4 bg-gray-700/30 rounded-lg">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-white font-medium">CPU Mining</span>
-                <span className="text-green-400">Active</span>
+          <h3 className="text-xl font-bold text-white mb-4">OPTIK Wallet Integration</h3>
+          
+          {connected ? (
+            <div className="space-y-4">
+              <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
+                <div className="flex items-center space-x-3 mb-2">
+                  <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                  <span className="text-green-400 font-medium">Wallet Connected</span>
+                </div>
+                <p className="text-gray-300 text-sm">
+                  {publicKey?.toString().slice(0, 8)}...{publicKey?.toString().slice(-8)}
+                </p>
               </div>
-              <div className="text-sm text-gray-400">
-                <p>Cores: 8 | Threads: 16</p>
-                <p>Temperature: 65°C</p>
+              
+              <div className="space-y-3">
+                <div className="p-3 bg-gray-700/30 rounded-lg">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-300 text-sm">OPTK Balance</span>
+                    <span className="text-white font-medium">1,250.00 OPTK</span>
+                  </div>
+                </div>
+                
+                <div className="p-3 bg-gray-700/30 rounded-lg">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-300 text-sm">Pending Rewards</span>
+                    <span className="text-orange-400 font-medium">{earnings.toFixed(6)} OPTK</span>
+                  </div>
+                </div>
               </div>
             </div>
+          ) : (
+            <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+              <p className="text-amber-400 font-medium mb-2">Wallet Not Connected</p>
+              <p className="text-amber-300/80 text-sm mb-4">
+                Connect your OPTIK wallet to view balances and claim rewards
+              </p>
+              <button
+                onClick={handleConnectWallet}
+                className="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-semibold py-2 rounded-lg transition-all duration-200"
+              >
+                Connect Wallet
+              </button>
+            </div>
+          )}
+          
+          <div className="mt-6 space-y-3">
+            <button
+              onClick={handleOpenOptikWallet}
+              className="w-full bg-orange-600/20 hover:bg-orange-600/30 text-orange-400 font-semibold py-3 rounded-lg transition-all duration-200 border border-orange-500/30 flex items-center justify-center space-x-2"
+            >
+              <ExternalLink className="w-5 h-5" />
+              <span>Open OPTIK Wallet</span>
+            </button>
             
-            <div className="p-4 bg-gray-700/30 rounded-lg">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-white font-medium">GPU Mining</span>
-                <span className="text-gray-400">Not Available</span>
-              </div>
-              <div className="text-sm text-gray-400">
-                <p>Upgrade to Pro for GPU mining</p>
-              </div>
+            <div className="text-center">
+              <p className="text-gray-400 text-xs">
+                Don't have an OPTIK wallet?{' '}
+                <button 
+                  onClick={handleOpenOptikWallet}
+                  className="text-orange-400 hover:text-orange-300 underline"
+                >
+                  Download here
+                </button>
+              </p>
             </div>
           </div>
-          
-          <button className="w-full mt-4 bg-orange-600/20 hover:bg-orange-600/30 text-orange-400 font-semibold py-3 rounded-lg transition-all duration-200 border border-orange-500/30">
-            Optimize Settings
-          </button>
         </div>
       </div>
 
@@ -263,12 +370,12 @@ export default function Mining() {
             </ul>
           </div>
           <div>
-            <h4 className="text-orange-400 font-medium mb-2">Energy Efficiency</h4>
+            <h4 className="text-orange-400 font-medium mb-2">Wallet Security</h4>
             <ul className="text-gray-300 text-sm space-y-1">
-              <li>• Use renewable energy sources</li>
-              <li>• Optimize power settings</li>
-              <li>• Monitor electricity costs</li>
-              <li>• Consider mining profitability</li>
+              <li>• Use hardware wallets for large amounts</li>
+              <li>• Enable 2FA on your OPTIK wallet</li>
+              <li>• Regularly backup your seed phrase</li>
+              <li>• Claim rewards frequently</li>
             </ul>
           </div>
         </div>
