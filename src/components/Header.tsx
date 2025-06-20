@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import { TrendingUp, MessageSquare, ArrowRightLeft, Wallet, Rocket, BarChart3, CreditCard, FileText, Map, Pickaxe, Coins, Gift, Menu, X, ExternalLink } from 'lucide-react';
+import { TrendingUp, MessageSquare, ArrowRightLeft, Wallet, Rocket, BarChart3, CreditCard, FileText, Map, Pickaxe, Coins, Gift, Menu, X, ExternalLink, Brain } from 'lucide-react';
 
 interface HeaderProps {
   activeTab: string;
@@ -15,6 +15,7 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
   const navigationItems = [
     { id: 'analytics', label: 'Analytics', icon: TrendingUp, type: 'internal' },
     { id: 'chat', label: 'AI Assistant', icon: MessageSquare, type: 'internal' },
+    { id: 'ai-analytics', label: 'AI Analytics', icon: Brain, type: 'internal' },
     { id: 'creator', label: 'Meme Creator', icon: Rocket, type: 'internal' },
     { id: 'chart', label: 'Live Trading', icon: BarChart3, type: 'internal' },
     { id: 'swap', label: 'Token Swap', icon: ArrowRightLeft, type: 'internal' },

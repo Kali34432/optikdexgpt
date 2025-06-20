@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import AnalyticsDashboard from './components/AnalyticsDashboard';
 import AIChat from './components/AIChat';
+import AIAnalytics from './components/AIAnalytics';
 import TokenSwap from './components/TokenSwap';
 import MemeCreator from './components/MemeCreator';
 import TradingChart from './components/TradingChart';
@@ -25,6 +26,8 @@ function App() {
         return <AnalyticsDashboard />;
       case 'chat':
         return <AIChat />;
+      case 'ai-analytics':
+        return <AIAnalytics />;
       case 'swap':
         return <TokenSwap />;
       case 'creator':
