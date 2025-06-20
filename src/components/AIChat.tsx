@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
 import { Send, Bot, User, Sparkles } from 'lucide-react';
-import { useWallet } from '@solana/wallet-adapter-react';
-
-const { publicKey, connected, signTransaction } = useWallet();
 
 type Message = {
   type: 'bot' | 'user';
@@ -37,34 +34,17 @@ export default function AIChat() {
     setInputMessage('');
     setIsLoading(true);
 
-    const systemPrompt = {
-      role: 'system',
-      content: `You are Optik GPT, a crypto AI assistant providing financial strategies, DeFi guidance, and market insights.`,
-    };
-
-    try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        body: JSON.stringify({
-          messages: [systemPrompt, { role: 'user', content: inputMessage }],
-          mode,
-        }),
-      });
-
-      const data = await res.json();
-
+    // Simulate API call with mock response
+    setTimeout(() => {
       const botMessage: Message = {
         type: 'bot',
-        content: data.response,
+        content: `I understand you're asking about "${inputMessage}". As your crypto AI assistant, I can help analyze market trends and provide insights. However, the full AI integration is currently in development. Please check back soon for complete functionality!`,
         timestamp: new Date().toLocaleTimeString(),
       };
 
       setMessages(prev => [...prev, botMessage]);
-    } catch (err) {
-      console.error('GPT Error:', err);
-    } finally {
       setIsLoading(false);
-    }
+    }, 1500);
   };
 
   const suggestedQuestions = [
@@ -135,6 +115,21 @@ export default function AIChat() {
               </div>
             </div>
           ))}
+          
+          {isLoading && (
+            <div className="flex items-start space-x-3">
+              <div className="bg-yellow-300/10 border border-yellow-200/30 p-2 rounded-lg">
+                <Bot className="w-4 h-4 text-yellow-300" />
+              </div>
+              <div className="bg-black/50 text-yellow-200 p-3 rounded-2xl">
+                <div className="flex space-x-1">
+                  <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                  <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Suggested Prompts */}
@@ -146,7 +141,6 @@ export default function AIChat() {
                 key={idx}
                 onClick={() => {
                   setInputMessage(q);
-                  sendMessage();
                 }}
                 className="px-3 py-1 bg-yellow-500/10 hover:bg-yellow-400/20 text-yellow-300 hover:text-white rounded-full text-sm border border-yellow-300/30"
               >
@@ -161,14 +155,15 @@ export default function AIChat() {
               type="text"
               value={inputMessage}
               onChange={e => setInputMessage(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && sendMessage()}
+              onKeyDown={e => e.key === 'Enter' && !isLoading && sendMessage()}
               placeholder="Ask anything about crypto..."
               className="flex-1 bg-black border border-yellow-300/30 rounded-2xl px-4 py-2 text-yellow-200 placeholder-yellow-500"
+              disabled={isLoading}
             />
             <button
               onClick={sendMessage}
-              disabled={isLoading}
-              className="bg-yellow-400 hover:bg-yellow-300 text-black p-2 rounded-2xl"
+              disabled={isLoading || !inputMessage.trim()}
+              className="bg-yellow-400 hover:bg-yellow-300 disabled:opacity-50 disabled:cursor-not-allowed text-black p-2 rounded-2xl"
             >
               <Send className="w-5 h-5" />
             </button>
