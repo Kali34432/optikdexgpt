@@ -43,16 +43,23 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
   };
 
   return (
-    <header className="bg-gray-900/50 backdrop-blur-md border-b border-gray-800 sticky top-0 z-50">
+    <header className="bg-gray-900/50 backdrop-blur-md border-b border-cyan-800/30 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-green-400 bg-clip-text text-transparent">
-                OptikCoinGPT
-              </h1>
-              <p className="text-xs text-gray-400">Meme Coin Creation Platform</p>
+            <div className="flex-shrink-0 flex items-center space-x-3">
+              <img 
+                src="/src/assets/logo.png" 
+                alt="OptikCoin Logo" 
+                className="w-10 h-10"
+              />
+              <div>
+                <h1 className="text-xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-300 bg-clip-text text-transparent">
+                  OptikCoin DEX
+                </h1>
+                <p className="text-xs text-gray-400">AI-Powered Trading Platform</p>
+              </div>
             </div>
           </div>
 
@@ -62,19 +69,19 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
             {connected && (
               <div className="text-right hidden sm:block">
                 <p className="text-xs text-gray-400">OPTK Balance</p>
-                <p className="text-sm font-semibold text-green-400">1,250.00</p>
+                <p className="text-sm font-semibold text-cyan-400">1,250.00</p>
               </div>
             )}
 
             {/* Wallet Connect Button */}
             <div className="wallet-adapter-button-trigger">
-              <WalletMultiButton className="!bg-gradient-to-r !from-purple-600 !to-blue-600 hover:!from-purple-700 hover:!to-blue-700 !text-white !px-4 !py-2 !rounded-lg !font-medium !transition-all !duration-200 !flex !items-center !space-x-2 !shadow-lg hover:!shadow-purple-500/25 !border-0 !text-sm" />
+              <WalletMultiButton className="!bg-gradient-to-r !from-cyan-600 !to-blue-600 hover:!from-cyan-700 hover:!to-blue-700 !text-white !px-4 !py-2 !rounded-lg !font-medium !transition-all !duration-200 !flex !items-center !space-x-2 !shadow-lg hover:!shadow-cyan-500/25 !border-0 !text-sm" />
             </div>
 
             {/* Connected Wallet Info */}
             {connected && publicKey && (
-              <div className="hidden lg:flex items-center space-x-2 bg-gray-700/50 px-3 py-2 rounded-lg border border-gray-600/50">
-                <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+              <div className="hidden lg:flex items-center space-x-2 bg-gray-700/50 px-3 py-2 rounded-lg border border-cyan-600/30">
+                <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
                 <span className="text-gray-300 text-sm">
                   {formatWalletAddress(publicKey.toString())}
                 </span>
@@ -84,7 +91,7 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
             {/* Menu Button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="bg-gray-700/50 hover:bg-gray-600/50 text-white p-2 rounded-lg transition-all duration-200 border border-gray-600/50 hover:border-gray-500/50"
+              className="bg-gray-700/50 hover:bg-gray-600/50 text-white p-2 rounded-lg transition-all duration-200 border border-cyan-600/30 hover:border-cyan-500/50"
             >
               {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -102,14 +109,14 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
           />
           
           {/* Menu Content */}
-          <div className="absolute right-4 top-16 w-80 bg-gray-800/95 backdrop-blur-md border border-gray-700/50 rounded-xl shadow-2xl z-50 lg:w-72">
+          <div className="absolute right-4 top-16 w-80 bg-gray-800/95 backdrop-blur-md border border-cyan-700/30 rounded-xl shadow-2xl z-50 lg:w-72">
             <div className="p-4">
               {/* Wallet Status in Menu */}
               {connected && publicKey && (
-                <div className="mb-4 p-3 bg-green-600/10 border border-green-500/20 rounded-lg">
+                <div className="mb-4 p-3 bg-cyan-600/10 border border-cyan-500/20 rounded-lg">
                   <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                    <span className="text-green-400 text-sm font-medium">Wallet Connected</span>
+                    <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
+                    <span className="text-cyan-400 text-sm font-medium">Wallet Connected</span>
                   </div>
                   <p className="text-gray-300 text-xs mt-1">
                     {formatWalletAddress(publicKey.toString())}
@@ -117,7 +124,7 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
                 </div>
               )}
 
-              <h3 className="text-lg font-semibold text-white mb-4 border-b border-gray-700/50 pb-2">
+              <h3 className="text-lg font-semibold text-white mb-4 border-b border-cyan-700/30 pb-2">
                 Navigation
               </h3>
               
@@ -132,7 +139,7 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
                       onClick={() => handleMenuItemClick(item)}
                       className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-all duration-200 ${
                         isActive
-                          ? 'bg-blue-600/20 text-blue-400 border border-blue-500/30'
+                          ? 'bg-cyan-600/20 text-cyan-400 border border-cyan-500/30'
                           : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
                       }`}
                     >
@@ -147,18 +154,18 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
               </div>
 
               {/* Social Links Section */}
-              <div className="mt-6 pt-4 border-t border-gray-700/50">
+              <div className="mt-6 pt-4 border-t border-cyan-700/30">
                 <h4 className="text-sm font-medium text-gray-400 mb-3">Connect With Us</h4>
                 <div className="flex space-x-2">
                   <button
                     onClick={() => window.open('https://t.me/optikcoingpt', '_blank')}
-                    className="flex-1 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 py-2 px-3 rounded-lg text-sm font-medium transition-all duration-200 border border-blue-500/30"
+                    className="flex-1 bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-400 py-2 px-3 rounded-lg text-sm font-medium transition-all duration-200 border border-cyan-500/30"
                   >
                     Telegram
                   </button>
                   <button
                     onClick={() => window.open('https://twitter.com/optikcoingpt', '_blank')}
-                    className="flex-1 bg-sky-600/20 hover:bg-sky-600/30 text-sky-400 py-2 px-3 rounded-lg text-sm font-medium transition-all duration-200 border border-sky-500/30"
+                    className="flex-1 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 py-2 px-3 rounded-lg text-sm font-medium transition-all duration-200 border border-blue-500/30"
                   >
                     Twitter
                   </button>

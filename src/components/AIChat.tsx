@@ -12,7 +12,7 @@ export default function AIChat() {
     {
       type: 'bot',
       content:
-        "Hi! I'm your crypto AI assistant. I can help you analyze market trends, explain DeFi concepts, and provide trading insights. What would you like to know?",
+        "Hi! I'm your OptikCoin AI assistant. I can help you analyze market trends, explain DeFi concepts, and provide trading insights. What would you like to know?",
       timestamp: new Date().toLocaleTimeString(),
     },
   ]);
@@ -38,7 +38,7 @@ export default function AIChat() {
     setTimeout(() => {
       const botMessage: Message = {
         type: 'bot',
-        content: `I understand you're asking about "${inputMessage}". As your crypto AI assistant, I can help analyze market trends and provide insights. However, the full AI integration is currently in development. Please check back soon for complete functionality!`,
+        content: `I understand you're asking about "${inputMessage}". As your OptikCoin AI assistant, I can help analyze market trends and provide insights. However, the full AI integration is currently in development. Please check back soon for complete functionality!`,
         timestamp: new Date().toLocaleTimeString(),
       };
 
@@ -61,23 +61,23 @@ export default function AIChat() {
         <select
           value={mode}
           onChange={e => setMode(e.target.value as 'lite' | 'power')}
-          className="bg-black border border-yellow-400 rounded-xl px-3 py-1 text-yellow-200 text-sm"
+          className="bg-black border border-cyan-400 rounded-xl px-3 py-1 text-cyan-200 text-sm"
         >
-          <option value="lite">Lite (1 $OPTIK) – GPT-3.5</option>
-          <option value="power">Power (2 $OPTIK) – GPT-4</option>
+          <option value="lite">Lite (1 $OPTK) – GPT-3.5</option>
+          <option value="power">Power (2 $OPTK) – GPT-4</option>
         </select>
       </div>
 
       {/* Chat Box */}
-      <div className="bg-black/70 border border-yellow-400/30 rounded-xl overflow-hidden shadow-lg">
+      <div className="bg-black/70 border border-cyan-400/30 rounded-xl overflow-hidden shadow-lg">
         {/* Header */}
-        <div className="bg-yellow-500/10 p-4 border-b border-yellow-300/30 flex items-center space-x-3">
-          <div className="bg-yellow-300 p-2 rounded-lg">
+        <div className="bg-cyan-500/10 p-4 border-b border-cyan-300/30 flex items-center space-x-3">
+          <div className="bg-cyan-300 p-2 rounded-lg">
             <Sparkles className="w-5 h-5 text-black" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-yellow-200">AI Crypto Assistant</h2>
-            <p className="text-yellow-400 text-sm">Powered by Optik GPT</p>
+            <h2 className="text-lg font-bold text-cyan-200">OptikCoin AI Assistant</h2>
+            <p className="text-cyan-400 text-sm">Powered by Optik GPT</p>
           </div>
         </div>
 
@@ -91,41 +91,41 @@ export default function AIChat() {
               <div
                 className={`p-2 rounded-lg ${
                   m.type === 'user'
-                    ? 'bg-yellow-400/10 border border-yellow-300/30'
-                    : 'bg-yellow-300/10 border border-yellow-200/30'
+                    ? 'bg-cyan-400/10 border border-cyan-300/30'
+                    : 'bg-cyan-300/10 border border-cyan-200/30'
                 }`}
               >
                 {m.type === 'user' ? (
-                  <User className="w-4 h-4 text-yellow-400" />
+                  <User className="w-4 h-4 text-cyan-400" />
                 ) : (
-                  <Bot className="w-4 h-4 text-yellow-300" />
+                  <Bot className="w-4 h-4 text-cyan-300" />
                 )}
               </div>
               <div className={`flex-1 ${m.type === 'user' ? 'text-right' : ''}`}>
                 <div
                   className={`inline-block p-3 rounded-2xl max-w-xs lg:max-w-md ${
                     m.type === 'user'
-                      ? 'bg-yellow-400/20 text-yellow-100'
-                      : 'bg-black/50 text-yellow-200'
+                      ? 'bg-cyan-400/20 text-cyan-100'
+                      : 'bg-black/50 text-cyan-200'
                   }`}
                 >
                   <p className="text-sm">{m.content}</p>
                 </div>
-                <p className="text-xs text-yellow-500 mt-1">{m.timestamp}</p>
+                <p className="text-xs text-cyan-500 mt-1">{m.timestamp}</p>
               </div>
             </div>
           ))}
           
           {isLoading && (
             <div className="flex items-start space-x-3">
-              <div className="bg-yellow-300/10 border border-yellow-200/30 p-2 rounded-lg">
-                <Bot className="w-4 h-4 text-yellow-300" />
+              <div className="bg-cyan-300/10 border border-cyan-200/30 p-2 rounded-lg">
+                <Bot className="w-4 h-4 text-cyan-300" />
               </div>
-              <div className="bg-black/50 text-yellow-200 p-3 rounded-2xl">
+              <div className="bg-black/50 text-cyan-200 p-3 rounded-2xl">
                 <div className="flex space-x-1">
-                  <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                  <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                  <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                 </div>
               </div>
             </div>
@@ -133,8 +133,8 @@ export default function AIChat() {
         </div>
 
         {/* Suggested Prompts */}
-        <div className="p-4 border-t border-yellow-400/30 bg-black">
-          <p className="text-yellow-400 text-sm mb-2">Suggested questions:</p>
+        <div className="p-4 border-t border-cyan-400/30 bg-black">
+          <p className="text-cyan-400 text-sm mb-2">Suggested questions:</p>
           <div className="flex flex-wrap gap-2 mb-4">
             {suggestedQuestions.map((q, idx) => (
               <button
@@ -142,7 +142,7 @@ export default function AIChat() {
                 onClick={() => {
                   setInputMessage(q);
                 }}
-                className="px-3 py-1 bg-yellow-500/10 hover:bg-yellow-400/20 text-yellow-300 hover:text-white rounded-full text-sm border border-yellow-300/30"
+                className="px-3 py-1 bg-cyan-500/10 hover:bg-cyan-400/20 text-cyan-300 hover:text-white rounded-full text-sm border border-cyan-300/30"
               >
                 {q}
               </button>
@@ -157,13 +157,13 @@ export default function AIChat() {
               onChange={e => setInputMessage(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && !isLoading && sendMessage()}
               placeholder="Ask anything about crypto..."
-              className="flex-1 bg-black border border-yellow-300/30 rounded-2xl px-4 py-2 text-yellow-200 placeholder-yellow-500"
+              className="flex-1 bg-black border border-cyan-300/30 rounded-2xl px-4 py-2 text-cyan-200 placeholder-cyan-500"
               disabled={isLoading}
             />
             <button
               onClick={sendMessage}
               disabled={isLoading || !inputMessage.trim()}
-              className="bg-yellow-400 hover:bg-yellow-300 disabled:opacity-50 disabled:cursor-not-allowed text-black p-2 rounded-2xl"
+              className="bg-cyan-400 hover:bg-cyan-300 disabled:opacity-50 disabled:cursor-not-allowed text-black p-2 rounded-2xl"
             >
               <Send className="w-5 h-5" />
             </button>

@@ -25,16 +25,16 @@ export default function AnalyticsDashboard() {
           return (
             <div
               key={index}
-              className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6 hover:border-blue-500/30 transition-all duration-300"
+              className="bg-gray-800/50 backdrop-blur-sm border border-cyan-700/30 rounded-xl p-6 hover:border-cyan-500/30 transition-all duration-300"
             >
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-400 text-sm font-medium">{metric.label}</p>
                   <p className="text-2xl font-bold text-white mt-1">{metric.value}</p>
-                  <p className="text-green-400 text-sm mt-1">{metric.change}</p>
+                  <p className="text-cyan-400 text-sm mt-1">{metric.change}</p>
                 </div>
-                <div className="bg-blue-600/20 p-3 rounded-lg">
-                  <Icon className="w-6 h-6 text-blue-400" />
+                <div className="bg-cyan-600/20 p-3 rounded-lg">
+                  <Icon className="w-6 h-6 text-cyan-400" />
                 </div>
               </div>
             </div>
@@ -43,14 +43,14 @@ export default function AnalyticsDashboard() {
       </div>
 
       {/* Chart Section */}
-      <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6">
+      <div className="bg-gray-800/50 backdrop-blur-sm border border-cyan-700/30 rounded-xl p-6">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-white">Market Overview</h2>
           <div className="flex space-x-2">
             {['1H', '24H', '7D', '30D'].map((period) => (
               <button
                 key={period}
-                className="px-3 py-1 text-sm bg-gray-700 hover:bg-blue-600/20 text-gray-300 hover:text-blue-400 rounded-md transition-all duration-200"
+                className="px-3 py-1 text-sm bg-gray-700 hover:bg-cyan-600/20 text-gray-300 hover:text-cyan-400 rounded-md transition-all duration-200"
               >
                 {period}
               </button>
@@ -59,9 +59,9 @@ export default function AnalyticsDashboard() {
         </div>
         
         {/* Simulated Chart Area */}
-        <div className="h-64 bg-gradient-to-r from-gray-900/50 to-gray-800/50 rounded-lg flex items-center justify-center border border-gray-700/30">
+        <div className="h-64 bg-gradient-to-r from-gray-900/50 to-slate-800/50 rounded-lg flex items-center justify-center border border-cyan-700/20">
           <div className="text-center">
-            <BarChart3 className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+            <BarChart3 className="w-16 h-16 text-cyan-600 mx-auto mb-4" />
             <p className="text-gray-400">Interactive Price Chart</p>
             <p className="text-gray-500 text-sm">Real-time market data visualization</p>
           </div>
@@ -69,16 +69,16 @@ export default function AnalyticsDashboard() {
       </div>
 
       {/* Top Tokens */}
-      <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6">
+      <div className="bg-gray-800/50 backdrop-blur-sm border border-cyan-700/30 rounded-xl p-6">
         <h2 className="text-xl font-semibold text-white mb-6">Top Tokens</h2>
         <div className="space-y-4">
           {topTokens.map((token, index) => (
             <div
               key={index}
-              className="flex items-center justify-between p-4 bg-gray-700/30 rounded-lg hover:bg-gray-700/50 transition-all duration-200 cursor-pointer border border-gray-600/20 hover:border-blue-500/30"
+              className="flex items-center justify-between p-4 bg-gray-700/30 rounded-lg hover:bg-gray-700/50 transition-all duration-200 cursor-pointer border border-cyan-600/20 hover:border-cyan-500/30"
             >
               <div className="flex items-center space-x-4">
-                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                <div className="w-10 h-10 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full flex items-center justify-center">
                   <span className="text-white font-bold text-sm">{token.symbol.charAt(0)}</span>
                 </div>
                 <div>
@@ -91,11 +91,11 @@ export default function AnalyticsDashboard() {
                 <p className="text-white font-semibold">{token.price}</p>
                 <div className="flex items-center space-x-1">
                   {token.positive ? (
-                    <TrendingUp className="w-4 h-4 text-green-400" />
+                    <TrendingUp className="w-4 h-4 text-cyan-400" />
                   ) : (
                     <TrendingDown className="w-4 h-4 text-red-400" />
                   )}
-                  <span className={`text-sm font-medium ${token.positive ? 'text-green-400' : 'text-red-400'}`}>
+                  <span className={`text-sm font-medium ${token.positive ? 'text-cyan-400' : 'text-red-400'}`}>
                     {token.change}
                   </span>
                 </div>
