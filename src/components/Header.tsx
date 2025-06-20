@@ -18,6 +18,7 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
     { id: 'creator', label: 'Meme Creator', icon: Rocket, type: 'internal' },
     { id: 'chart', label: 'Live Trading', icon: BarChart3, type: 'internal' },
     { id: 'swap', label: 'Token Swap', icon: ArrowRightLeft, type: 'internal' },
+    { id: 'wallet', label: 'OPTIK Wallet', icon: Wallet, type: 'internal' },
     { id: 'subscription', label: 'Subscribe', icon: CreditCard, type: 'internal' },
     { id: 'whitepaper', label: 'Whitepaper', icon: FileText, type: 'internal' },
     { id: 'roadmap', label: 'Roadmap', icon: Map, type: 'internal' },
@@ -71,6 +72,21 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
                 <p className="text-xs text-gray-400">OPTK Balance</p>
                 <p className="text-sm font-semibold text-cyan-400">1,250.00</p>
               </div>
+            )}
+
+            {/* OPTIK Wallet Button */}
+            {connected && (
+              <button
+                onClick={() => setActiveTab('wallet')}
+                className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 ${
+                  activeTab === 'wallet'
+                    ? 'bg-blue-600/20 text-blue-400 border border-blue-500/30'
+                    : 'bg-gray-700/50 hover:bg-gray-600/50 text-gray-300 hover:text-white border border-gray-600/30'
+                }`}
+              >
+                <Wallet className="w-4 h-4" />
+                <span className="hidden md:inline">OPTIK Wallet</span>
+              </button>
             )}
 
             {/* Wallet Connect Button */}

@@ -13,6 +13,7 @@ import Roadmap from './components/Roadmap';
 import Mining from './components/Mining';
 import Staking from './components/Staking';
 import Airdrop from './components/Airdrop';
+import OptikWallet from './components/OptikWallet';
 
 function App() {
   const [activeTab, setActiveTab] = useState('analytics');
@@ -30,6 +31,8 @@ function App() {
         return <MemeCreator />;
       case 'chart':
         return <TradingChart />;
+      case 'wallet':
+        return <OptikWallet />;
       case 'subscription':
         return <Subscription />;
       case 'whitepaper':
