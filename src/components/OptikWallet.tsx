@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
+import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { 
   Wallet, 
   Send, 
@@ -32,6 +33,7 @@ import {
 
 export default function OptikWallet() {
   const { connected, publicKey, disconnect } = useWallet();
+  const { setVisible } = useWalletModal();
   const [activeTab, setActiveTab] = useState('overview');
   const [showBalance, setShowBalance] = useState(true);
   const [isLocked, setIsLocked] = useState(false);
@@ -162,7 +164,7 @@ export default function OptikWallet() {
             Connect your wallet to access the full OPTIK ecosystem
           </p>
           <button
-            onClick={() => document.querySelector('.wallet-adapter-button-trigger button')?.click()}
+            onClick={() => setVisible(true)}
             className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 rounded-lg transition-all duration-200"
           >
             Connect Wallet

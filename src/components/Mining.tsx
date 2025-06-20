@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
+import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { Pickaxe, Zap, TrendingUp, Settings, Play, Pause, Award, Wallet, ExternalLink, Send, Download } from 'lucide-react';
 
 export default function Mining() {
   const { connected, publicKey } = useWallet();
+  const { setVisible } = useWalletModal();
   const [isMining, setIsMining] = useState(false);
   const [hashRate, setHashRate] = useState(0);
   const [earnings, setEarnings] = useState(0);
@@ -56,8 +58,7 @@ export default function Mining() {
 
   const handleConnectWallet = () => {
     if (!connected) {
-      // Trigger wallet connection modal
-      document.querySelector('.wallet-adapter-button-trigger button')?.click();
+      setVisible(true);
     }
   };
 

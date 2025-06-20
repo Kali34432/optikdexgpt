@@ -90,9 +90,7 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
             )}
 
             {/* Wallet Connect Button */}
-            <div className="wallet-adapter-button-trigger">
-              <WalletMultiButton className="!bg-gradient-to-r !from-cyan-600 !to-blue-600 hover:!from-cyan-700 hover:!to-blue-700 !text-white !px-4 !py-2 !rounded-lg !font-medium !transition-all !duration-200 !flex !items-center !space-x-2 !shadow-lg hover:!shadow-cyan-500/25 !border-0 !text-sm" />
-            </div>
+            <WalletMultiButton className="!bg-gradient-to-r !from-cyan-600 !to-blue-600 hover:!from-cyan-700 hover:!to-blue-700 !text-white !px-4 !py-2 !rounded-lg !font-medium !transition-all !duration-200 !flex !items-center !space-x-2 !shadow-lg hover:!shadow-cyan-500/25 !border-0 !text-sm" />
 
             {/* Connected Wallet Info */}
             {connected && publicKey && (
