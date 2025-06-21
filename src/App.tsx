@@ -17,6 +17,7 @@ import Airdrop from './components/Airdrop';
 import OptikWallet from './components/OptikWallet';
 import AdminLogin from './components/AdminLogin';
 import AdminDashboard from './components/AdminDashboard';
+import OptikGPTSidebar from './components/OptikGPTSidebar';
 
 function App() {
   const [activeTab, setActiveTab] = useState('analytics');
@@ -95,6 +96,9 @@ function App() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {renderActiveComponent()}
       </main>
+
+      {/* OptikGPT Sidebar - Available on all pages */}
+      <OptikGPTSidebar />
 
       {/* Background Effects - Updated with OptikCoin colors */}
       <div className="fixed inset-0 -z-10 overflow-hidden">
