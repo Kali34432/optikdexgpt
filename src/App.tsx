@@ -14,7 +14,6 @@ import Roadmap from './components/Roadmap';
 import Mining from './components/Mining';
 import Staking from './components/Staking';
 import Airdrop from './components/Airdrop';
-import OptikWallet from './components/OptikWallet';
 import AdminLogin from './components/AdminLogin';
 import AdminDashboard from './components/AdminDashboard';
 import OptikGPTSidebar from './components/OptikGPTSidebar';
@@ -57,8 +56,6 @@ function App() {
         return <MemeCreator />;
       case 'chart':
         return <TradingChart />;
-      case 'wallet':
-        return <OptikWallet />;
       case 'subscription':
         return <Subscription />;
       case 'whitepaper':
