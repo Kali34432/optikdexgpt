@@ -190,40 +190,56 @@ export default function Login({ onLogin }: LoginProps) {
                   type={showPassword ? 'text' : 'password'}
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="w-full bg-gray-700/50 border border-cyan-600/30 rounded-lg px-4 py-3 pl-12 pr-12 text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500/50
-        {!isLogin && (
-          <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300 mb-2">Confirm Password</label>
-            <div className="relative">
-              <input
-                id="confirmPassword"
-                type="password"
-                value={formData.confirmPassword}
-                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                className="w-full bg-gray-700/50 border border-cyan-600/30 rounded-lg px-4 py-3 pl-12 text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20"
-                placeholder="Confirm your password"
-                required
-              />
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  className="w-full bg-gray-700/50 border border-cyan-600/30 rounded-lg px-4 py-3 pl-12 pr-12 text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20"
+                  placeholder="Enter your password"
+                  required
+                />
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200"
+                >
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
             </div>
-          </div>
-        )}
 
-        <button
-          type="submit"
-          className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 shadow-lg"
-        >
-          {isLogin ? 'Login' : 'Create Account'}
-        </button>
-      </form>
+            {!isLogin && (
+              <div>
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300 mb-2">Confirm Password</label>
+                <div className="relative">
+                  <input
+                    id="confirmPassword"
+                    type="password"
+                    value={formData.confirmPassword}
+                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                    className="w-full bg-gray-700/50 border border-cyan-600/30 rounded-lg px-4 py-3 pl-12 text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20"
+                    placeholder="Confirm your password"
+                    required
+                  />
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                </div>
+              </div>
+            )}
 
-      {isLogin && (
-        <div className="mt-6 text-center">
-          <a href="#" className="text-cyan-400 hover:text-cyan-300 text-sm transition-colors duration-200">
-            Forgot your password?
-          </a>
+            <button
+              type="submit"
+              className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 shadow-lg"
+            >
+              {isLogin ? 'Login' : 'Create Account'}
+            </button>
+          </form>
+
+          {isLogin && (
+            <div className="mt-6 text-center">
+              <a href="#" className="text-cyan-400 hover:text-cyan-300 text-sm transition-colors duration-200">
+                Forgot your password?
+              </a>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
-  </div>
-</div>
+  );
+}
