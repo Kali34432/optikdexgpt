@@ -15,10 +15,32 @@ import Mining from './components/Mining';
 import Staking from './components/Staking';
 import Airdrop from './components/Airdrop';
 import OptikWallet from './components/OptikWallet';
+import AdminLogin from './components/AdminLogin';
+import AdminDashboard from './components/AdminDashboard';
 
 function App() {
   const [activeTab, setActiveTab] = useState('analytics');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAdminMode, setIsAdminMode] = useState(false);
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+
+  // Check for admin mode via URL parameter or special key combination
+  React.useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('admin') === 'true') {
+      setIsAdminMode(true);
+    }
+
+    // Secret key combination: Ctrl+Shift+A
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+        setIsAdminMode(true);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const renderActiveComponent = () => {
     switch (activeTab) {
@@ -53,6 +75,15 @@ function App() {
     }
   };
 
+  // Admin Mode
+  if (isAdminMode) {
+    if (!isAdminLoggedIn) {
+      return <AdminLogin onLogin={setIsAdminLoggedIn} />;
+    }
+    return <AdminDashboard />;
+  }
+
+  // Regular User Mode
   if (!isLoggedIn) {
     return <Login onLogin={setIsLoggedIn} />;
   }
@@ -71,6 +102,13 @@ function App() {
         <div className="absolute -bottom-40 -left-32 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl"></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-slate-500/5 rounded-full blur-3xl"></div>
       </div>
+
+      {/* Admin Mode Indicator */}
+      {isAdminMode && (
+        <div className="fixed bottom-4 right-4 bg-red-600/20 border border-red-500/30 rounded-lg px-3 py-2">
+          <p className="text-red-400 text-sm font-medium">Admin Mode Active</p>
+        </div>
+      )}
     </div>
   );
 }
