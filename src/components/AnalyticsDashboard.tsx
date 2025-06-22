@@ -1,8 +1,12 @@
-import React from 'react';
-import { TrendingUp, TrendingDown, DollarSign, BarChart3, Activity, Eye } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { TrendingUp, TrendingDown, DollarSign, BarChart3, Activity, Eye, Volume2, Zap, Target, Settings } from 'lucide-react';
+import InteractiveTradingChart from './InteractiveTradingChart';
 
 export default function AnalyticsDashboard() {
+  const [selectedToken, setSelectedToken] = useState('OPTK/SOL');
+
   const topTokens = [
+    { symbol: 'OPTK', name: 'OptikCoin', price: '$0.0245', change: '+8.67%', volume: '$2.4M', positive: true },
     { symbol: 'SOL', name: 'Solana', price: '$98.45', change: '+5.67%', volume: '$2.4B', positive: true },
     { symbol: 'ETH', name: 'Ethereum', price: '$2,345.67', change: '+2.34%', volume: '$8.9B', positive: true },
     { symbol: 'BTC', name: 'Bitcoin', price: '$43,210.98', change: '-1.23%', volume: '$15.2B', positive: false },
@@ -42,35 +46,50 @@ export default function AnalyticsDashboard() {
         })}
       </div>
 
-      {/* Chart Section */}
-      <div className="bg-gray-800/50 backdrop-blur-sm border border-cyan-700/30 rounded-xl p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-white">Market Overview</h2>
-          <div className="flex space-x-2">
-            {['1H', '24H', '7D', '30D'].map((period) => (
-              <button
-                key={period}
-                className="px-3 py-1 text-sm bg-gray-700 hover:bg-cyan-600/20 text-gray-300 hover:text-cyan-400 rounded-md transition-all duration-200"
-              >
-                {period}
-              </button>
-            ))}
+      {/* Token Selector */}
+      <div className="bg-gray-800/50 backdrop-blur-sm border border-cyan-700/30 rounded-xl p-4">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold text-white">Select Trading Pair</h2>
+          <div className="flex items-center space-x-2">
+            <Target className="w-5 h-5 text-cyan-400" />
+            <span className="text-cyan-400 text-sm font-medium">Live Trading</span>
           </div>
         </div>
-        
-        {/* Simulated Chart Area */}
-        <div className="h-64 bg-gradient-to-r from-gray-900/50 to-slate-800/50 rounded-lg flex items-center justify-center border border-cyan-700/20">
-          <div className="text-center">
-            <BarChart3 className="w-16 h-16 text-cyan-600 mx-auto mb-4" />
-            <p className="text-gray-400">Interactive Price Chart</p>
-            <p className="text-gray-500 text-sm">Real-time market data visualization</p>
-          </div>
+        <div className="flex flex-wrap gap-2">
+          {topTokens.map((token) => (
+            <button
+              key={token.symbol}
+              onClick={() => setSelectedToken(`${token.symbol}/SOL`)}
+              className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 ${
+                selectedToken === `${token.symbol}/SOL`
+                  ? 'bg-cyan-600/20 text-cyan-400 border border-cyan-500/30'
+                  : 'bg-gray-700/50 text-gray-300 hover:text-white hover:bg-gray-600/50 border border-gray-600/30'
+              }`}
+            >
+              <div className="w-6 h-6 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full flex items-center justify-center">
+                <span className="text-white font-bold text-xs">{token.symbol.charAt(0)}</span>
+              </div>
+              <span>{token.symbol}/SOL</span>
+              <span className={`text-xs ${token.positive ? 'text-green-400' : 'text-red-400'}`}>
+                {token.change}
+              </span>
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Top Tokens */}
+      {/* Interactive Trading Chart */}
+      <InteractiveTradingChart selectedPair={selectedToken} />
+
+      {/* Top Tokens Table */}
       <div className="bg-gray-800/50 backdrop-blur-sm border border-cyan-700/30 rounded-xl p-6">
-        <h2 className="text-xl font-semibold text-white mb-6">Top Tokens</h2>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-semibold text-white">Top Tokens</h2>
+          <div className="flex items-center space-x-2">
+            <Zap className="w-4 h-4 text-yellow-400" />
+            <span className="text-yellow-400 text-sm">Real-time data</span>
+          </div>
+        </div>
         <div className="space-y-4">
           {topTokens.map((token, index) => (
             <div
