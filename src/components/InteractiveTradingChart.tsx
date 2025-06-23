@@ -189,8 +189,8 @@ export default function InteractiveTradingChart({ selectedPair }: InteractiveTra
           const lastPoint = prevData[prevData.length - 1];
           const now = new Date();
           const volatility = 0.02;
-          const change = (Math.random() - 0.5) * volatility;
-          const newPrice = Math.max(0.001, lastPoint.close * (1 + change));
+          const priceChange = (Math.random() - 0.5) * volatility;
+          const newPrice = Math.max(0.001, lastPoint.close * (1 + priceChange));
           
           const newPoint: TradingData = {
             time: formatTime(now),
@@ -208,9 +208,9 @@ export default function InteractiveTradingChart({ selectedPair }: InteractiveTra
           
           // Update current price and change
           setCurrentPrice(newPrice);
-          const change = newPrice - lastPoint.close;
-          const changePercent = (change / lastPoint.close) * 100;
-          setPriceChange(change);
+          const priceDifference = newPrice - lastPoint.close;
+          const changePercent = (priceDifference / lastPoint.close) * 100;
+          setPriceChange(priceDifference);
           setPriceChangePercent(changePercent);
           
           return calculatedData;
