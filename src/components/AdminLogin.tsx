@@ -1,20 +1,9 @@
 import React, { useState } from 'react';
 import { Shield, Eye, EyeOff, Smartphone, AlertTriangle } from 'lucide-react';
-import { adminAPI } from '../services/adminAPI';
 
 interface AdminLoginProps {
   onLogin: (success: boolean) => void;
 }
-// src/pages/AdminLogin.tsx
-
-const login = () => {
-  if (username === 'admin' && password === 'secret123') {
-    localStorage.setItem('isAdmin', 'true');
-    navigate('/admin/dashboard');
-  } else {
-    alert('Invalid credentials');
-  }
-};
 
 export default function AdminLogin({ onLogin }: AdminLoginProps) {
   const [step, setStep] = useState<'credentials' | '2fa'>('credentials');
@@ -27,21 +16,24 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Default admin credentials
+  const ADMIN_EMAIL = 'admin@optikcoin.com';
+  const ADMIN_PASSWORD = 'OptikAdmin2025!';
+
   const handleCredentialsSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
 
     try {
-      // First attempt login to check if 2FA is required
-      await adminAPI.login(formData.email, formData.password);
-      setStep('2fa');
-    } catch (err: any) {
-      if (err.message.includes('2FA')) {
+      // Check credentials
+      if (formData.email === ADMIN_EMAIL && formData.password === ADMIN_PASSWORD) {
         setStep('2fa');
       } else {
-        setError('Invalid credentials. Please try again.');
+        setError('Invalid admin credentials. Please check your email and password.');
       }
+    } catch (err: any) {
+      setError('Authentication failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -53,10 +45,17 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
     setError('');
 
     try {
-      await adminAPI.login(formData.email, formData.password, formData.twoFactorCode);
-      onLogin(true);
+      // For demo purposes, accept any 6-digit code except 000000
+      if (formData.twoFactorCode.length === 6 && formData.twoFactorCode !== '000000') {
+        // Store admin session
+        localStorage.setItem('adminAuthenticated', 'true');
+        localStorage.setItem('adminLoginTime', Date.now().toString());
+        onLogin(true);
+      } else {
+        setError('Invalid 2FA code. Please try again.');
+      }
     } catch (err: any) {
-      setError('Invalid 2FA code. Please try again.');
+      setError('2FA verification failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -72,7 +71,7 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
                 <Smartphone className="w-8 h-8 text-red-400" />
               </div>
               <h2 className="text-2xl font-bold text-white mb-2">Two-Factor Authentication</h2>
-              <p className="text-gray-400">Enter the 6-digit code from your authenticator app</p>
+              <p className="text-gray-400">Enter any 6-digit code (except 000000) for demo</p>
             </div>
 
             {error && (
@@ -93,7 +92,7 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
                   value={formData.twoFactorCode}
                   onChange={(e) => setFormData({...formData, twoFactorCode: e.target.value.replace(/\D/g, '')})}
                   className="w-full bg-gray-700/50 border border-red-600/30 rounded-lg px-4 py-3 text-white text-center text-2xl font-mono tracking-widest placeholder-gray-400 focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/20"
-                  placeholder="000000"
+                  placeholder="123456"
                   required
                 />
               </div>
@@ -151,6 +150,16 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
                   </p>
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* Demo Credentials Display */}
+          <div className="mb-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+            <p className="text-blue-400 font-medium text-sm mb-2">Demo Admin Credentials:</p>
+            <div className="space-y-1 text-xs font-mono">
+              <p className="text-blue-300">Email: admin@optikcoin.com</p>
+              <p className="text-blue-300">Password: OptikAdmin2025!</p>
+              <p className="text-blue-300">2FA: Any 6-digit code (except 000000)</p>
             </div>
           </div>
 
