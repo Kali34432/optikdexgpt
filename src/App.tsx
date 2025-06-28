@@ -19,6 +19,7 @@ import Airdrop from './components/Airdrop';
 import AdminLogin from './components/AdminLogin';
 import AdminDashboard from './components/AdminDashboard';
 import OptikGPTSidebar from './components/OptikGPTSidebar';
+import WalletPage from './routes/WalletPage';
 
 function App() {
   const [activeTab, setActiveTab] = useState('analytics');
@@ -100,6 +101,8 @@ function App() {
         return <Staking />;
       case 'airdrop':
         return <Airdrop />;
+      case 'wallet':
+        return <WalletPage />;
       default:
         return <AnalyticsDashboard />;
     }
@@ -119,6 +122,9 @@ function App() {
       <Routes>
         {/* Auth callback route */}
         <Route path="/auth/callback" element={<AuthCallback />} />
+        
+        {/* Wallet dedicated page */}
+        <Route path="/wallet" element={<WalletPage />} />
         
         {/* Main app routes */}
         <Route path="/*" element={

@@ -1,0 +1,57 @@
+{
+  "short_name": "OptikWallet",
+  "name": "OPTIK Wallet - Advanced Crypto Wallet",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#0f172a",
+  "background_color": "#0f172a",
+  "description": "Secure, fast, and feature-rich wallet for the OptikCoin ecosystem",
+  "orientation": "portrait",
+  "categories": ["finance", "cryptocurrency", "utilities"],
+  "screenshots": [
+    {
+      "src": "screenshots/wallet-home.png",
+      "sizes": "1280x720",
+      "type": "image/png"
+    },
+    {
+      "src": "screenshots/wallet-portfolio.png",
+      "sizes": "1280x720",
+      "type": "image/png"
+    },
+    {
+      "src": "screenshots/wallet-swap.png",
+      "sizes": "1280x720",
+      "type": "image/png"
+    }
+  ],
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=com.optikcoin.wallet",
+      "id": "com.optikcoin.wallet"
+    },
+    {
+      "platform": "itunes",
+      "url": "https://apps.apple.com/app/optik-wallet/id1234567890"
+    }
+  ],
+  "prefer_related_applications": false
+}

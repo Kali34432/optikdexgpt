@@ -2,3 +2,85 @@
 @tailwind components;
 @tailwind utilities;
 @solana/wallet-adapter-react-ui/styles.css;
+
+/* OPTIK Wallet Custom Styles */
+@keyframes fade-in-out {
+  0% { opacity: 0; transform: translateY(-10px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-10px); }
+}
+
+.animate-fade-in-out {
+  animation: fade-in-out 3s ease-in-out;
+}
+
+/* PWA Install Prompt */
+.pwa-install-prompt {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  backdrop-filter: blur(8px);
+  max-width: 320px;
+}
+
+/* Wallet Connect Button Overrides */
+.wallet-adapter-button {
+  font-family: inherit !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  height: auto !important;
+  padding: 8px 16px !important;
+  border-radius: 8px !important;
+  background-image: linear-gradient(to right, #0891b2, #2563eb) !important;
+  transition: all 0.2s !important;
+}
+
+.wallet-adapter-button:hover {
+  background-image: linear-gradient(to right, #0e7490, #1d4ed8) !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25) !important;
+}
+
+.wallet-adapter-button-trigger {
+  background-color: transparent !important;
+}
+
+.wallet-adapter-modal-wrapper {
+  background: rgba(15, 23, 42, 0.95) !important;
+  backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(56, 189, 248, 0.3) !important;
+}
+
+.wallet-adapter-modal-button-close {
+  background-color: rgba(100, 116, 139, 0.5) !important;
+}
+
+.wallet-adapter-modal-title {
+  color: white !important;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(56, 189, 248, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(56, 189, 248, 0.5);
+}

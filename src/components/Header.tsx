@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { TrendingUp, MessageSquare, ArrowRightLeft, Wallet, Rocket, BarChart3, CreditCard, FileText, Map, Pickaxe, Coins, Gift, Menu, X, ExternalLink, Brain, Download, Shield, CheckCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import WalletDownloadModal from './WalletDownloadModal';
 
 interface HeaderProps {
   activeTab: string;
@@ -21,14 +23,15 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
     { id: 'creator', label: 'Meme Creator', icon: Rocket, type: 'internal' },
     { id: 'chart', label: 'Live Trading', icon: BarChart3, type: 'internal' },
     { id: 'swap', label: 'Token Swap', icon: ArrowRightLeft, type: 'internal' },
+    { id: 'wallet', label: 'OPTIK Wallet', icon: Wallet, type: 'internal' },
     { id: 'subscription', label: 'Subscribe', icon: CreditCard, type: 'internal' },
     { id: 'whitepaper', label: 'Whitepaper', icon: FileText, type: 'internal' },
     { id: 'roadmap', label: 'Roadmap', icon: Map, type: 'internal' },
     { id: 'mining', label: 'Mining', icon: Pickaxe, type: 'internal' },
     { id: 'staking', label: 'Staking', icon: Coins, type: 'internal' },
     { id: 'airdrop', label: 'Airdrop', icon: Gift, type: 'internal' },
-    { id: 'telegram', label: 'Telegram', icon: ExternalLink, type: 'external', url: 'https://t.me/optikcoingpt' },
-    { id: 'twitter', label: 'Twitter', icon: ExternalLink, type: 'external', url: 'https://twitter.com/optikcoingpt' },
+    { id: 'telegram', label: 'Telegram', icon: ExternalLink, type: 'external', url: 'https://t.me/optikcoin' },
+    { id: 'twitter', label: 'Twitter', icon: ExternalLink, type: 'external', url: 'https://twitter.com/optikcoin' },
   ];
 
   const handleMenuItemClick = (item: any) => {
@@ -41,120 +44,8 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
   };
 
   const handleDownloadWallet = () => {
-    // Create comprehensive wallet installer
-    const walletInstaller = {
-      name: 'OPTIK Wallet',
-      version: '2.0.0',
-      description: 'The most advanced crypto wallet for the OptikCoin ecosystem',
-      features: [
-        'Multi-chain support (Solana, Ethereum, Polygon, BSC)',
-        'Hardware wallet integration (Ledger, Trezor)',
-        'DeFi protocols integration',
-        'NFT management and trading',
-        'Staking and yield farming',
-        'Cross-chain swaps',
-        'AI-powered portfolio insights',
-        'Advanced security features',
-        'Biometric authentication',
-        'Real-time price alerts',
-        'Transaction history and analytics',
-        'Built-in DEX aggregator'
-      ],
-      security: {
-        encryption: 'AES-256',
-        biometric: true,
-        hardware: true,
-        multiSig: true,
-        seedPhrase: true,
-        pinCode: true
-      },
-      platforms: {
-        windows: {
-          name: 'OptikWallet-Setup-2.0.0.exe',
-          size: '125 MB',
-          requirements: 'Windows 10 or later',
-          downloadUrl: 'https://releases.optikcoin.com/wallet/windows/OptikWallet-Setup-2.0.0.exe'
-        },
-        mac: {
-          name: 'OptikWallet-2.0.0.dmg',
-          size: '118 MB',
-          requirements: 'macOS 10.15 or later',
-          downloadUrl: 'https://releases.optikcoin.com/wallet/mac/OptikWallet-2.0.0.dmg'
-        },
-        linux: {
-          name: 'OptikWallet-2.0.0.AppImage',
-          size: '132 MB',
-          requirements: 'Ubuntu 18.04+ or equivalent',
-          downloadUrl: 'https://releases.optikcoin.com/wallet/linux/OptikWallet-2.0.0.AppImage'
-        },
-        android: {
-          name: 'OPTIK Wallet',
-          size: '45 MB',
-          requirements: 'Android 8.0+',
-          downloadUrl: 'https://play.google.com/store/apps/details?id=com.optikcoin.wallet'
-        },
-        ios: {
-          name: 'OPTIK Wallet',
-          size: '52 MB',
-          requirements: 'iOS 13.0+',
-          downloadUrl: 'https://apps.apple.com/app/optik-wallet/id1234567890'
-        }
-      },
-      installation: {
-        windows: [
-          '1. Download OptikWallet-Setup-2.0.0.exe',
-          '2. Run the installer as administrator',
-          '3. Follow the setup wizard',
-          '4. Create or import your wallet',
-          '5. Set up security features'
-        ],
-        mac: [
-          '1. Download OptikWallet-2.0.0.dmg',
-          '2. Open the DMG file',
-          '3. Drag OPTIK Wallet to Applications',
-          '4. Launch from Applications folder',
-          '5. Create or import your wallet'
-        ],
-        mobile: [
-          '1. Download from App Store or Google Play',
-          '2. Install the application',
-          '3. Open and create new wallet',
-          '4. Secure with biometric authentication',
-          '5. Start using your wallet'
-        ]
-      },
-      changelog: {
-        '2.0.0': [
-          'Complete UI/UX redesign',
-          'Added multi-chain support',
-          'Integrated AI portfolio insights',
-          'Enhanced security features',
-          'Improved transaction speed',
-          'Added NFT management',
-          'Cross-chain swap functionality',
-          'Hardware wallet support'
-        ]
-      },
-      support: {
-        documentation: 'https://docs.optikcoin.com/wallet',
-        support: 'https://support.optikcoin.com',
-        community: 'https://discord.gg/optikcoin',
-        github: 'https://github.com/optikcoin/wallet'
-      }
-    };
-
-    // Create downloadable installer file
-    const blob = new Blob([JSON.stringify(walletInstaller, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'OptikWallet-Installer-v2.0.0.json';
-    a.click();
-    URL.revokeObjectURL(url);
-
-    // Show success notification
-    alert('OPTIK Wallet installer downloaded! This file contains download links and installation instructions for all platforms.');
-    setShowWalletModal(false);
+    // Open wallet download modal
+    setShowWalletModal(true);
   };
 
   const handleKYCVerification = () => {
@@ -201,7 +92,7 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
 
               {/* OPTIK Wallet Download Button */}
               <button
-                onClick={() => setShowWalletModal(true)}
+                onClick={handleDownloadWallet}
                 className="px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 bg-purple-600/20 hover:bg-purple-600/30 text-purple-400 border border-purple-500/30"
               >
                 <Download className="w-4 h-4" />
@@ -291,13 +182,13 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
                   <h4 className="text-sm font-medium text-gray-400 mb-3">Connect With Us</h4>
                   <div className="flex space-x-2">
                     <button
-                      onClick={() => window.open('https://t.me/optikcoingpt', '_blank')}
+                      onClick={() => window.open('https://t.me/optikcoin', '_blank')}
                       className="flex-1 bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-400 py-2 px-3 rounded-lg text-sm font-medium transition-all duration-200 border border-cyan-500/30"
                     >
                       Telegram
                     </button>
                     <button
-                      onClick={() => window.open('https://twitter.com/optikcoingpt', '_blank')}
+                      onClick={() => window.open('https://twitter.com/optikcoin', '_blank')}
                       className="flex-1 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 py-2 px-3 rounded-lg text-sm font-medium transition-all duration-200 border border-blue-500/30"
                     >
                       Twitter
@@ -311,131 +202,10 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
       </header>
 
       {/* OPTIK Wallet Download Modal */}
-      {showWalletModal && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-gray-800/95 backdrop-blur-md border border-purple-700/30 rounded-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
-            <div className="text-center mb-6">
-              <div className="bg-purple-600/20 p-4 rounded-full inline-flex mb-4">
-                <Wallet className="w-8 h-8 text-purple-400" />
-              </div>
-              <h2 className="text-2xl font-bold text-white mb-2">OPTIK Wallet v2.0.0</h2>
-              <p className="text-gray-400">The most advanced crypto wallet for the OptikCoin ecosystem</p>
-            </div>
-
-            {/* Platform Downloads */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              <button
-                onClick={handleDownloadWallet}
-                className="bg-gray-700/30 hover:bg-gray-600/50 border border-gray-600/50 rounded-lg p-4 transition-all duration-200 text-left"
-              >
-                <div className="flex items-center space-x-3 mb-2">
-                  <Download className="w-6 h-6 text-blue-400" />
-                  <div>
-                    <h3 className="text-white font-semibold">Windows</h3>
-                    <p className="text-gray-400 text-sm">OptikWallet-Setup.exe</p>
-                  </div>
-                </div>
-                <p className="text-gray-500 text-xs">125 MB • Windows 10+</p>
-              </button>
-
-              <button
-                onClick={handleDownloadWallet}
-                className="bg-gray-700/30 hover:bg-gray-600/50 border border-gray-600/50 rounded-lg p-4 transition-all duration-200 text-left"
-              >
-                <div className="flex items-center space-x-3 mb-2">
-                  <Download className="w-6 h-6 text-blue-400" />
-                  <div>
-                    <h3 className="text-white font-semibold">macOS</h3>
-                    <p className="text-gray-400 text-sm">OptikWallet.dmg</p>
-                  </div>
-                </div>
-                <p className="text-gray-500 text-xs">118 MB • macOS 10.15+</p>
-              </button>
-
-              <button
-                onClick={handleDownloadWallet}
-                className="bg-gray-700/30 hover:bg-gray-600/50 border border-gray-600/50 rounded-lg p-4 transition-all duration-200 text-left"
-              >
-                <div className="flex items-center space-x-3 mb-2">
-                  <Download className="w-6 h-6 text-green-400" />
-                  <div>
-                    <h3 className="text-white font-semibold">Android</h3>
-                    <p className="text-gray-400 text-sm">Google Play Store</p>
-                  </div>
-                </div>
-                <p className="text-gray-500 text-xs">45 MB • Android 8.0+</p>
-              </button>
-
-              <button
-                onClick={handleDownloadWallet}
-                className="bg-gray-700/30 hover:bg-gray-600/50 border border-gray-600/50 rounded-lg p-4 transition-all duration-200 text-left"
-              >
-                <div className="flex items-center space-x-3 mb-2">
-                  <Download className="w-6 h-6 text-green-400" />
-                  <div>
-                    <h3 className="text-white font-semibold">iOS</h3>
-                    <p className="text-gray-400 text-sm">App Store</p>
-                  </div>
-                </div>
-                <p className="text-gray-500 text-xs">52 MB • iOS 13.0+</p>
-              </button>
-            </div>
-
-            {/* Features */}
-            <div className="space-y-4 mb-6">
-              <h3 className="text-lg font-semibold text-white">Key Features</h3>
-              <div className="grid grid-cols-2 gap-3">
-                {[
-                  'Multi-chain support',
-                  'Hardware wallet integration',
-                  'AI portfolio insights',
-                  'DeFi protocols',
-                  'NFT management',
-                  'Cross-chain swaps',
-                  'Biometric security',
-                  'Real-time alerts'
-                ].map((feature, index) => (
-                  <div key={index} className="flex items-center space-x-2">
-                    <CheckCircle className="w-4 h-4 text-green-400" />
-                    <span className="text-gray-300 text-sm">{feature}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <button
-                onClick={handleDownloadWallet}
-                className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2"
-              >
-                <Download className="w-5 h-5" />
-                <span>Download OPTIK Wallet</span>
-              </button>
-
-              <button
-                onClick={handleKYCVerification}
-                className="w-full bg-green-600/20 hover:bg-green-600/30 text-green-400 font-semibold py-3 rounded-lg transition-all duration-200 border border-green-500/30 flex items-center justify-center space-x-2"
-              >
-                <Shield className="w-5 h-5" />
-                <span>Complete KYC Verification</span>
-              </button>
-
-              <button
-                onClick={() => setShowWalletModal(false)}
-                className="w-full bg-gray-600/20 hover:bg-gray-600/30 text-gray-400 font-semibold py-3 rounded-lg transition-all duration-200 border border-gray-500/30"
-              >
-                Cancel
-              </button>
-            </div>
-
-            <div className="mt-4 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-              <p className="text-blue-400 text-xs text-center">
-                <strong>Note:</strong> OPTIK Wallet v2.0.0 includes all the latest security features and multi-chain support.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+      <WalletDownloadModal 
+        isOpen={showWalletModal} 
+        onClose={() => setShowWalletModal(false)} 
+      />
 
       {/* KYC Verification Modal */}
       {showKYCModal && (
