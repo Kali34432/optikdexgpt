@@ -41,6 +41,15 @@ export const useSubscription = () => {
         .single();
 
       if (profileError) {
+        // If profile doesn't exist, user might be newly registered
+        if (profileError.code === 'PGRST116') {
+          setSubscription({
+            isSubscribed: false,
+            subscriptionTier: 'free',
+            subscriptionStatus: 'inactive'
+          });
+          return;
+        }
         throw profileError;
       }
 
@@ -64,6 +73,12 @@ export const useSubscription = () => {
     } catch (err: any) {
       console.error('Error fetching subscription:', err);
       setError(err.message);
+      // Set default values on error
+      setSubscription({
+        isSubscribed: false,
+        subscriptionTier: 'free',
+        subscriptionStatus: 'inactive'
+      });
     } finally {
       setLoading(false);
     }

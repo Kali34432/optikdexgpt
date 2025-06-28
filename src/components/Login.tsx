@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Eye, EyeOff, Shield, Smartphone, Mail, Lock, User, CheckCircle, AlertTriangle, Loader } from 'lucide-react';
+import { Eye, EyeOff, Shield, Mail, Lock, User, CheckCircle, AlertTriangle, Loader, ArrowLeft } from 'lucide-react';
+import { supabase } from '../services/supabaseClient';
 import logo from '../assets/logo.png';
 
 interface LoginProps {
@@ -12,7 +13,6 @@ interface FormData {
   confirmPassword: string;
   firstName: string;
   lastName: string;
-  twoFactorCode: string;
   acceptTerms: boolean;
 }
 
@@ -29,21 +29,41 @@ export default function Login({ onLogin }: LoginProps) {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [show2FA, setShow2FA] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
   const [passwordStrength, setPasswordStrength] = useState(0);
+  const [showEmailVerification, setShowEmailVerification] = useState(false);
+  const [verificationEmail, setVerificationEmail] = useState('');
   const [formData, setFormData] = useState<FormData>({
     email: '',
     password: '',
     confirmPassword: '',
     firstName: '',
     lastName: '',
-    twoFactorCode: '',
     acceptTerms: false,
   });
+
+  // Check if user is already logged in
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user && user.email_confirmed_at) {
+        onLogin(true);
+      }
+    };
+    checkUser();
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session?.user?.email_confirmed_at) {
+        onLogin(true);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [onLogin]);
 
   // Reset form when switching between login/signup
   useEffect(() => {
@@ -53,23 +73,14 @@ export default function Login({ onLogin }: LoginProps) {
       confirmPassword: '',
       firstName: '',
       lastName: '',
-      twoFactorCode: '',
       acceptTerms: false,
     });
     setError('');
     setSuccess('');
     setValidationErrors({});
     setPasswordStrength(0);
-  }, [isLogin, show2FA]);
-
-  // Auto-focus 2FA input when shown
-  useEffect(() => {
-    if (show2FA) {
-      setTimeout(() => {
-        document.getElementById('twoFactorInput')?.focus();
-      }, 100);
-    }
-  }, [show2FA]);
+    setShowEmailVerification(false);
+  }, [isLogin]);
 
   // Password strength calculation
   useEffect(() => {
@@ -147,50 +158,6 @@ export default function Login({ onLogin }: LoginProps) {
     return Object.keys(errors).length === 0;
   };
 
-  const simulateRegistration = async (userData: FormData): Promise<boolean> => {
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Simulate some registration scenarios
-    if (userData.email === 'test@example.com') {
-      throw new Error('Email already exists');
-    }
-    
-    // Store user data in localStorage for demo purposes
-    const users = JSON.parse(localStorage.getItem('optik_users') || '[]');
-    const newUser = {
-      id: Date.now(),
-      email: userData.email,
-      firstName: userData.firstName,
-      lastName: userData.lastName,
-      password: userData.password, // In real app, this would be hashed
-      createdAt: new Date().toISOString(),
-      verified: false,
-      twoFactorEnabled: true
-    };
-    
-    users.push(newUser);
-    localStorage.setItem('optik_users', JSON.stringify(users));
-    localStorage.setItem('optik_current_user', JSON.stringify(newUser));
-    
-    return true;
-  };
-
-  const simulateLogin = async (email: string, password: string): Promise<boolean> => {
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    const users = JSON.parse(localStorage.getItem('optik_users') || '[]');
-    const user = users.find((u: any) => u.email === email && u.password === password);
-    
-    if (!user) {
-      throw new Error('Invalid email or password');
-    }
-    
-    localStorage.setItem('optik_current_user', JSON.stringify(user));
-    return true;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -204,52 +171,92 @@ export default function Login({ onLogin }: LoginProps) {
 
     try {
       if (isLogin) {
-        await simulateLogin(formData.email, formData.password);
-        setSuccess('Login successful! Redirecting to 2FA verification...');
-        setTimeout(() => {
-          setShow2FA(true);
-          setIsLoading(false);
-        }, 1000);
+        // Sign in existing user
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: formData.email,
+          password: formData.password,
+        });
+
+        if (error) {
+          if (error.message.includes('Email not confirmed')) {
+            setError('Please check your email and click the verification link before signing in.');
+            setShowEmailVerification(true);
+            setVerificationEmail(formData.email);
+          } else if (error.message.includes('Invalid login credentials')) {
+            setError('Invalid email or password. Please check your credentials and try again.');
+          } else {
+            setError(error.message);
+          }
+          return;
+        }
+
+        if (data.user && data.user.email_confirmed_at) {
+          setSuccess('Login successful! Welcome back.');
+          setTimeout(() => onLogin(true), 1000);
+        } else {
+          setError('Please verify your email address before signing in.');
+          setShowEmailVerification(true);
+          setVerificationEmail(formData.email);
+        }
       } else {
-        await simulateRegistration(formData);
-        setSuccess('Account created successfully! Please verify with 2FA to continue.');
-        setTimeout(() => {
-          setShow2FA(true);
-          setIsLoading(false);
-        }, 1000);
+        // Sign up new user
+        const { data, error } = await supabase.auth.signUp({
+          email: formData.email,
+          password: formData.password,
+          options: {
+            data: {
+              first_name: formData.firstName,
+              last_name: formData.lastName,
+            },
+            emailRedirectTo: `${window.location.origin}/auth/callback`
+          }
+        });
+
+        if (error) {
+          if (error.message.includes('User already registered')) {
+            setError('An account with this email already exists. Please sign in instead.');
+          } else {
+            setError(error.message);
+          }
+          return;
+        }
+
+        if (data.user) {
+          setSuccess('Account created successfully! Please check your email for a verification link.');
+          setShowEmailVerification(true);
+          setVerificationEmail(formData.email);
+        }
       }
     } catch (err: any) {
-      setError(err.message || 'An error occurred. Please try again.');
+      setError(err.message || 'An unexpected error occurred. Please try again.');
+    } finally {
       setIsLoading(false);
     }
   };
 
-  const handle2FASubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!/^\d{6}$/.test(formData.twoFactorCode)) {
-      setError('Please enter a valid 6-digit code');
-      return;
-    }
+  const handleResendVerification = async () => {
+    if (!verificationEmail) return;
 
     setIsLoading(true);
     setError('');
 
     try {
-      // Simulate 2FA verification
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // For demo, accept any 6-digit code except 000000
-      if (formData.twoFactorCode === '000000') {
-        throw new Error('Invalid verification code');
-      }
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: verificationEmail,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`
+        }
+      });
 
-      setSuccess('2FA verification successful! Welcome to OptikCoin DEX!');
-      setTimeout(() => {
-        onLogin(true);
-      }, 1500);
+      if (error) {
+        setError(error.message);
+      } else {
+        setSuccess('Verification email sent! Please check your inbox.');
+      }
     } catch (err: any) {
-      setError(err.message || 'Invalid verification code. Please try again.');
+      setError(err.message || 'Failed to resend verification email.');
+    } finally {
       setIsLoading(false);
     }
   };
@@ -263,18 +270,20 @@ export default function Login({ onLogin }: LoginProps) {
     }
   };
 
-  // 2FA Screen
-  if (show2FA) {
+  // Email Verification Screen
+  if (showEmailVerification) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-900 flex items-center justify-center px-4">
         <div className="max-w-md w-full">
           <div className="bg-gray-800/50 backdrop-blur-sm border border-cyan-700/30 rounded-xl p-8">
             <div className="text-center mb-8">
               <div className="bg-cyan-600/20 p-4 rounded-full inline-flex mb-4">
-                <Shield className="w-8 h-8 text-cyan-400" />
+                <Mail className="w-8 h-8 text-cyan-400" />
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">Two-Factor Authentication</h2>
-              <p className="text-gray-400">Enter the 6-digit code from your authenticator app</p>
+              <h2 className="text-2xl font-bold text-white mb-2">Check Your Email</h2>
+              <p className="text-gray-400">
+                We've sent a verification link to <strong>{verificationEmail}</strong>
+              </p>
             </div>
 
             {error && (
@@ -291,57 +300,51 @@ export default function Login({ onLogin }: LoginProps) {
               </div>
             )}
 
-            <form onSubmit={handle2FASubmit} className="space-y-6">
-              <div>
-                <label htmlFor="twoFactorInput" className="block text-sm font-medium text-gray-300 mb-2">
-                  Authentication Code
-                </label>
-                <div className="relative">
-                  <input
-                    id="twoFactorInput"
-                    type="text"
-                    maxLength={6}
-                    value={formData.twoFactorCode}
-                    onChange={(e) => handleInputChange('twoFactorCode', e.target.value.replace(/\D/g, ''))}
-                    className="w-full bg-gray-700/50 border border-cyan-600/30 rounded-lg px-4 py-3 text-white text-center text-2xl font-mono tracking-widest placeholder-gray-400 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20"
-                    placeholder="000000"
-                    disabled={isLoading}
-                    required
-                  />
-                  <Smartphone className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                </div>
+            <div className="space-y-4">
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
+                <h3 className="text-blue-400 font-medium mb-2">Next Steps:</h3>
+                <ol className="text-blue-300/80 text-sm space-y-1">
+                  <li>1. Check your email inbox</li>
+                  <li>2. Click the verification link</li>
+                  <li>3. Return here to sign in</li>
+                </ol>
               </div>
 
               <button
-                type="submit"
-                disabled={isLoading || formData.twoFactorCode.length !== 6}
-                className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition-all duration-200 shadow-lg flex items-center justify-center space-x-2"
+                onClick={handleResendVerification}
+                disabled={isLoading}
+                className="w-full bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-400 font-semibold py-3 rounded-lg transition-all duration-200 border border-cyan-500/30 disabled:opacity-50 flex items-center justify-center space-x-2"
               >
                 {isLoading ? (
                   <>
                     <Loader className="w-5 h-5 animate-spin" />
-                    <span>Verifying...</span>
+                    <span>Sending...</span>
                   </>
                 ) : (
-                  <span>Verify & Login</span>
+                  <>
+                    <Mail className="w-5 h-5" />
+                    <span>Resend Verification Email</span>
+                  </>
                 )}
               </button>
 
-              <div className="text-center">
-                <button
-                  type="button"
-                  onClick={() => setShow2FA(false)}
-                  className="text-gray-400 hover:text-white text-sm transition-colors duration-200"
-                  disabled={isLoading}
-                >
-                  Back to login
-                </button>
-              </div>
-            </form>
+              <button
+                onClick={() => {
+                  setShowEmailVerification(false);
+                  setVerificationEmail('');
+                  setError('');
+                  setSuccess('');
+                }}
+                className="w-full bg-gray-600/20 hover:bg-gray-600/30 text-gray-400 font-semibold py-3 rounded-lg transition-all duration-200 border border-gray-500/30 flex items-center justify-center space-x-2"
+              >
+                <ArrowLeft className="w-5 h-5" />
+                <span>Back to Login</span>
+              </button>
+            </div>
 
-            <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-              <p className="text-blue-400 text-sm text-center">
-                <strong>Demo:</strong> Enter any 6-digit code except 000000 to continue
+            <div className="mt-6 p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+              <p className="text-amber-400 text-sm text-center">
+                <strong>Note:</strong> Check your spam folder if you don't see the email within a few minutes.
               </p>
             </div>
           </div>
@@ -638,10 +641,10 @@ export default function Login({ onLogin }: LoginProps) {
             </div>
           )}
 
-          {/* Demo Information */}
-          <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-            <p className="text-blue-400 text-sm text-center">
-              <strong>Demo Mode:</strong> Use any email/password combination. 2FA accepts any 6-digit code except 000000.
+          {/* Real Authentication Info */}
+          <div className="mt-6 p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
+            <p className="text-green-400 text-sm text-center">
+              <strong>Real Authentication:</strong> Create an account with your email and receive a verification link to get started.
             </p>
           </div>
         </div>
