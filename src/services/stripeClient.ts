@@ -3,10 +3,10 @@ import { loadStripe } from '@stripe/stripe-js'
 const stripePublishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
 
 if (!stripePublishableKey) {
-  throw new Error('Missing Stripe publishable key')
+  console.warn('Missing Stripe publishable key. Stripe functionality will be limited.')
 }
 
-export const stripe = await loadStripe(stripePublishableKey)
+export const stripePromise = loadStripe(stripePublishableKey || '')
 
 export interface PaymentIntentData {
   client_secret: string
@@ -25,6 +25,7 @@ export const processPayment = async (
   paymentMethod: any,
   billingDetails?: any
 ) => {
+  const stripe = await stripePromise
   if (!stripe) {
     throw new Error('Stripe not initialized')
   }
@@ -46,6 +47,7 @@ export const processSubscription = async (
   paymentMethod: any,
   billingDetails?: any
 ) => {
+  const stripe = await stripePromise
   if (!stripe) {
     throw new Error('Stripe not initialized')
   }
@@ -63,6 +65,7 @@ export const processSubscription = async (
 }
 
 export const createPaymentMethod = async (cardElement: any, billingDetails: any) => {
+  const stripe = await stripePromise
   if (!stripe) {
     throw new Error('Stripe not initialized')
   }
@@ -78,41 +81,6 @@ export const createPaymentMethod = async (cardElement: any, billingDetails: any)
   }
 
   return paymentMethod
-}
-
-// Subscription management
-export const cancelSubscription = async (subscriptionId: string) => {
-  // This would typically be handled by your backend
-  const response = await fetch('/api/cancel-subscription', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ subscriptionId })
-  })
-
-  if (!response.ok) {
-    throw new Error('Failed to cancel subscription')
-  }
-
-  return response.json()
-}
-
-export const updateSubscription = async (subscriptionId: string, updates: any) => {
-  // This would typically be handled by your backend
-  const response = await fetch('/api/update-subscription', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ subscriptionId, ...updates })
-  })
-
-  if (!response.ok) {
-    throw new Error('Failed to update subscription')
-  }
-
-  return response.json()
 }
 
 // Price formatting utilities

@@ -10,7 +10,7 @@ import { CreditCard, Lock, CheckCircle, AlertCircle, Loader } from 'lucide-react
 import { createPaymentIntent, createSubscription } from '../services/supabaseClient';
 import { supabase } from '../services/supabaseClient';
 
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '');
 
 interface StripePaymentProps {
   amount?: number;
