@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Rocket, Code, DollarSign, Shield, Zap, Upload, Sparkles, AlertTriangle, Globe, TrendingUp, Bot, Megaphone, Check } from 'lucide-react';
+import { useSubscription } from '../hooks/useSubscription';
+import SubscriptionGate from './SubscriptionGate';
+import { createToken } from '../services/supabaseClient';
 
 export default function MemeCreator() {
+  const { hasAccess } = useSubscription();
   const [step, setStep] = useState(1);
+  const [isCreating, setIsCreating] = useState(false);
   const [tokenData, setTokenData] = useState({
     name: '',
     symbol: '',
@@ -10,6 +15,11 @@ export default function MemeCreator() {
     totalSupply: '',
     decimals: '9',
     image: null,
+    websiteUrl: '',
+    telegramUrl: '',
+    twitterUrl: '',
+    liquidityPoolSol: '',
+    liquidityPoolTokens: ''
   });
 
   // Add-on states
@@ -108,6 +118,51 @@ export default function MemeCreator() {
     { id: 3, title: 'Liquidity Pool', icon: DollarSign },
     { id: 4, title: 'Launch', icon: Rocket },
   ];
+
+  const handleCreateToken = async () => {
+    if (!hasAccess('token_creation')) {
+      alert('Token creation requires Ultimate Bundle subscription');
+      return;
+    }
+
+    setIsCreating(true);
+    try {
+      const result = await createToken({
+        name: tokenData.name,
+        symbol: tokenData.symbol,
+        description: tokenData.description,
+        totalSupply: parseInt(tokenData.totalSupply),
+        decimals: parseInt(tokenData.decimals),
+        websiteUrl: tokenData.websiteUrl,
+        telegramUrl: tokenData.telegramUrl,
+        twitterUrl: tokenData.twitterUrl,
+        liquidityPoolSol: parseFloat(tokenData.liquidityPoolSol),
+        liquidityPoolTokens: parseFloat(tokenData.liquidityPoolTokens)
+      });
+
+      alert(`Token created successfully! Contract address: ${result.contract_address}`);
+      
+      // Reset form
+      setTokenData({
+        name: '',
+        symbol: '',
+        description: '',
+        totalSupply: '',
+        decimals: '9',
+        image: null,
+        websiteUrl: '',
+        telegramUrl: '',
+        twitterUrl: '',
+        liquidityPoolSol: '',
+        liquidityPoolTokens: ''
+      });
+      setStep(1);
+    } catch (error: any) {
+      alert(`Failed to create token: ${error.message}`);
+    } finally {
+      setIsCreating(false);
+    }
+  };
 
   const renderStepContent = () => {
     switch (step) {
@@ -262,6 +317,8 @@ export default function MemeCreator() {
                   <input
                     type="text"
                     placeholder="10.0"
+                    value={tokenData.liquidityPoolSol}
+                    onChange={(e) => setTokenData({...tokenData, liquidityPoolSol: e.target.value})}
                     className="w-full bg-gray-700/50 border border-gray-600/50 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/20"
                   />
                   <p className="text-gray-400 text-xs mt-1">Minimum 5 SOL required</p>
@@ -271,6 +328,8 @@ export default function MemeCreator() {
                   <input
                     type="text"
                     placeholder="80"
+                    value={tokenData.liquidityPoolTokens}
+                    onChange={(e) => setTokenData({...tokenData, liquidityPoolTokens: e.target.value})}
                     className="w-full bg-gray-700/50 border border-gray-600/50 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/20"
                   />
                   <p className="text-gray-400 text-xs mt-1">% of total supply for liquidity</p>
@@ -425,109 +484,117 @@ export default function MemeCreator() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
-      {/* Progress Steps */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          {steps.map((stepItem, index) => {
-            const Icon = stepItem.icon;
-            const isActive = step === stepItem.id;
-            const isCompleted = step > stepItem.id;
-            
-            return (
-              <div key={stepItem.id} className="flex items-center">
-                <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all duration-200 ${
-                  isActive 
-                    ? 'bg-blue-600 border-blue-600 text-white' 
-                    : isCompleted 
-                    ? 'bg-green-600 border-green-600 text-white'
-                    : 'border-gray-600 text-gray-400'
-                }`}>
-                  <Icon className="w-5 h-5" />
+    <SubscriptionGate feature="token_creation">
+      <div className="max-w-4xl mx-auto">
+        {/* Progress Steps */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            {steps.map((stepItem, index) => {
+              const Icon = stepItem.icon;
+              const isActive = step === stepItem.id;
+              const isCompleted = step > stepItem.id;
+              
+              return (
+                <div key={stepItem.id} className="flex items-center">
+                  <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all duration-200 ${
+                    isActive 
+                      ? 'bg-blue-600 border-blue-600 text-white' 
+                      : isCompleted 
+                      ? 'bg-green-600 border-green-600 text-white'
+                      : 'border-gray-600 text-gray-400'
+                  }`}>
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <div className="ml-3 hidden sm:block">
+                    <p className={`text-sm font-medium ${isActive ? 'text-blue-400' : isCompleted ? 'text-green-400' : 'text-gray-400'}`}>
+                      Step {stepItem.id}
+                    </p>
+                    <p className={`text-xs ${isActive ? 'text-white' : 'text-gray-500'}`}>
+                      {stepItem.title}
+                    </p>
+                  </div>
+                  {index < steps.length - 1 && (
+                    <div className={`w-12 h-0.5 mx-4 ${isCompleted ? 'bg-green-600' : 'bg-gray-600'}`} />
+                  )}
                 </div>
-                <div className="ml-3 hidden sm:block">
-                  <p className={`text-sm font-medium ${isActive ? 'text-blue-400' : isCompleted ? 'text-green-400' : 'text-gray-400'}`}>
-                    Step {stepItem.id}
-                  </p>
-                  <p className={`text-xs ${isActive ? 'text-white' : 'text-gray-500'}`}>
-                    {stepItem.title}
-                  </p>
-                </div>
-                {index < steps.length - 1 && (
-                  <div className={`w-12 h-0.5 mx-4 ${isCompleted ? 'bg-green-600' : 'bg-gray-600'}`} />
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-8">
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-white mb-2">
-            {steps.find(s => s.id === step)?.title}
-          </h2>
-          <p className="text-gray-400">
-            {step === 1 && "Configure your meme coin's basic properties"}
-            {step === 2 && "Set up smart contract security features"}
-            {step === 3 && "Configure liquidity pool and funding"}
-            {step === 4 && "Review and launch your token with optional AI tools"}
-          </p>
+              );
+            })}
+          </div>
         </div>
 
-        {renderStepContent()}
+        {/* Main Content */}
+        <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-8">
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-white mb-2">
+              {steps.find(s => s.id === step)?.title}
+            </h2>
+            <p className="text-gray-400">
+              {step === 1 && "Configure your meme coin's basic properties"}
+              {step === 2 && "Set up smart contract security features"}
+              {step === 3 && "Configure liquidity pool and funding"}
+              {step === 4 && "Review and launch your token with optional AI tools"}
+            </p>
+          </div>
 
-        {/* Navigation Buttons */}
-        <div className="flex justify-between mt-8 pt-6 border-t border-gray-700/50">
-          <button
-            onClick={() => setStep(Math.max(1, step - 1))}
-            disabled={step === 1}
-            className="px-6 py-2 bg-gray-700/50 hover:bg-gray-600/50 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-all duration-200"
-          >
-            Previous
-          </button>
-          
-          {step < 4 ? (
+          {renderStepContent()}
+
+          {/* Navigation Buttons */}
+          <div className="flex justify-between mt-8 pt-6 border-t border-gray-700/50">
             <button
-              onClick={() => setStep(Math.min(4, step + 1))}
-              className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg transition-all duration-200 shadow-lg hover:shadow-blue-500/25"
+              onClick={() => setStep(Math.max(1, step - 1))}
+              disabled={step === 1}
+              className="px-6 py-2 bg-gray-700/50 hover:bg-gray-600/50 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-all duration-200"
             >
-              Next Step
+              Previous
             </button>
-          ) : (
-            <button className="px-8 py-3 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-green-500/25 flex items-center space-x-2">
-              <Rocket className="w-5 h-5" />
-              <span>Launch Token (${calculateTotalCost().toFixed(2)})</span>
-            </button>
-          )}
+            
+            {step < 4 ? (
+              <button
+                onClick={() => setStep(Math.min(4, step + 1))}
+                className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg transition-all duration-200 shadow-lg hover:shadow-blue-500/25"
+              >
+                Next Step
+              </button>
+            ) : (
+              <button 
+                onClick={handleCreateToken}
+                disabled={isCreating}
+                className="px-8 py-3 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-green-500/25 flex items-center space-x-2"
+              >
+                <Rocket className="w-5 h-5" />
+                <span>
+                  {isCreating ? 'Creating Token...' : `Launch Token (${calculateTotalCost().toFixed(2)})`}
+                </span>
+              </button>
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* AI Assistant Sidebar */}
-      <div className="mt-8 bg-purple-600/10 border border-purple-500/20 rounded-xl p-6">
-        <div className="flex items-center space-x-3 mb-4">
-          <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-2 rounded-lg">
-            <Sparkles className="w-5 h-5 text-white" />
+        {/* AI Assistant Sidebar */}
+        <div className="mt-8 bg-purple-600/10 border border-purple-500/20 rounded-xl p-6">
+          <div className="flex items-center space-x-3 mb-4">
+            <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-2 rounded-lg">
+              <Sparkles className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-white">AI Meme Coin Assistant</h3>
+              <p className="text-purple-300/80 text-sm">Get personalized advice for your token</p>
+            </div>
           </div>
-          <div>
-            <h3 className="text-lg font-semibold text-white">AI Meme Coin Assistant</h3>
-            <p className="text-purple-300/80 text-sm">Get personalized advice for your token</p>
+          
+          <div className="space-y-3">
+            <button className="w-full text-left p-3 bg-purple-600/20 hover:bg-purple-600/30 rounded-lg transition-colors duration-200">
+              <p className="text-purple-300 font-medium text-sm">💡 Generate viral token name ideas</p>
+            </button>
+            <button className="w-full text-left p-3 bg-purple-600/20 hover:bg-purple-600/30 rounded-lg transition-colors duration-200">
+              <p className="text-purple-300 font-medium text-sm">🚀 Optimize tokenomics for growth</p>
+            </button>
+            <button className="w-full text-left p-3 bg-purple-600/20 hover:bg-purple-600/30 rounded-lg transition-colors duration-200">
+              <p className="text-purple-300 font-medium text-sm">🛡️ Security best practices</p>
+            </button>
           </div>
-        </div>
-        
-        <div className="space-y-3">
-          <button className="w-full text-left p-3 bg-purple-600/20 hover:bg-purple-600/30 rounded-lg transition-colors duration-200">
-            <p className="text-purple-300 font-medium text-sm">💡 Generate viral token name ideas</p>
-          </button>
-          <button className="w-full text-left p-3 bg-purple-600/20 hover:bg-purple-600/30 rounded-lg transition-colors duration-200">
-            <p className="text-purple-300 font-medium text-sm">🚀 Optimize tokenomics for growth</p>
-          </button>
-          <button className="w-full text-left p-3 bg-purple-600/20 hover:bg-purple-600/30 rounded-lg transition-colors duration-200">
-            <p className="text-purple-300 font-medium text-sm">🛡️ Security best practices</p>
-          </button>
         </div>
       </div>
-    </div>
+    </SubscriptionGate>
   );
 }

@@ -1,8 +1,14 @@
 import React, { useState } from 'react';
-import { Crown, Shield, Zap, TrendingUp, Bot, Star, Check, X } from 'lucide-react';
+import { Crown, Shield, Zap, TrendingUp, Bot, Star, Check, X, CreditCard } from 'lucide-react';
+import { useSubscription } from '../hooks/useSubscription';
+import SubscriptionModal from './SubscriptionModal';
+import PaymentModal from './PaymentModal';
 
 export default function Subscription() {
-  const [selectedPlan, setSelectedPlan] = useState('pro');
+  const { subscription, loading } = useSubscription();
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
 
   const plans = [
     {
@@ -23,13 +29,16 @@ export default function Subscription() {
         'No priority support',
         'Limited chart features',
       ],
-      buttonText: 'Current Plan',
-      buttonClass: 'bg-gray-600 text-gray-300 cursor-not-allowed',
+      buttonText: subscription.subscriptionTier === 'free' ? 'Current Plan' : 'Downgrade',
+      buttonClass: subscription.subscriptionTier === 'free' 
+        ? 'bg-gray-600 text-gray-300 cursor-not-allowed' 
+        : 'bg-gray-600/20 hover:bg-gray-600/30 text-gray-400',
       icon: Star,
       popular: false,
+      disabled: subscription.subscriptionTier === 'free'
     },
     {
-      id: 'pro',
+      id: 'pro_creator',
       name: 'Pro Creator',
       price: '$49.99',
       period: 'per month',
@@ -45,13 +54,16 @@ export default function Subscription() {
         'Market alerts',
       ],
       limitations: [],
-      buttonText: 'Subscribe Now',
-      buttonClass: 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white',
+      buttonText: subscription.subscriptionTier === 'pro_creator' ? 'Current Plan' : 'Subscribe Now',
+      buttonClass: subscription.subscriptionTier === 'pro_creator'
+        ? 'bg-blue-600 text-white cursor-not-allowed'
+        : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white',
       icon: Crown,
       popular: true,
+      disabled: subscription.subscriptionTier === 'pro_creator'
     },
     {
-      id: 'launch',
+      id: 'ultimate_bundle',
       name: 'Ultimate Creator Bundle',
       price: '$799.99',
       period: 'one-time + $99.99/month',
@@ -72,11 +84,52 @@ export default function Subscription() {
         'Ongoing monthly AI access',
       ],
       limitations: [],
-      buttonText: 'Get the Bundle',
-      buttonClass: 'bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white',
+      buttonText: subscription.subscriptionTier === 'ultimate_bundle' ? 'Current Plan' : 'Get the Bundle',
+      buttonClass: subscription.subscriptionTier === 'ultimate_bundle'
+        ? 'bg-purple-600 text-white cursor-not-allowed'
+        : 'bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white',
       icon: Zap,
       popular: false,
+      disabled: subscription.subscriptionTier === 'ultimate_bundle'
     },
+  ];
+
+  const oneTimePurchases = [
+    {
+      id: 'website_builder',
+      name: 'Optik Website Builder AI',
+      price: 99.99,
+      description: 'AI-powered website creation for your meme coin project',
+      icon: '🌐'
+    },
+    {
+      id: 'viral_gpt',
+      name: 'Optik Viral GPT',
+      price: 99.99,
+      description: 'Advanced viral marketing strategies and campaign planning',
+      icon: '🚀'
+    },
+    {
+      id: 'social_media_posts',
+      name: 'Viral Social Media Posts',
+      price: 99.99,
+      description: 'AI-generated viral content for all major social platforms',
+      icon: '📱'
+    },
+    {
+      id: 'advanced_llm',
+      name: 'Optik GPT Advanced LLM',
+      price: 99.99,
+      description: 'Predictive trading analysis and advanced market strategies',
+      icon: '🧠'
+    },
+    {
+      id: 'promotion_gpt',
+      name: 'Meme Coin Promotion GPT',
+      price: 99.99,
+      description: 'Comprehensive promotion and community building tools',
+      icon: '📢'
+    }
   ];
 
   const securityFeatures = [
@@ -97,6 +150,29 @@ export default function Subscription() {
     },
   ];
 
+  const handlePlanSelect = (planId: string) => {
+    if (planId === 'free' || plans.find(p => p.id === planId)?.disabled) {
+      return;
+    }
+    
+    if (planId === 'pro_creator' || planId === 'ultimate_bundle') {
+      setShowSubscriptionModal(true);
+    }
+  };
+
+  const handleProductPurchase = (product: any) => {
+    setSelectedProduct(product);
+    setShowPaymentModal(true);
+  };
+
+  if (loading) {
+    return (
+      <div className="max-w-6xl mx-auto flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-6xl mx-auto space-y-8">
       {/* Header */}
@@ -107,6 +183,16 @@ export default function Subscription() {
         <p className="text-gray-400 text-lg max-w-2xl mx-auto">
           From free exploration to professional meme coin creation with AI-powered tools, we have the perfect plan for your crypto journey.
         </p>
+        
+        {/* Current Subscription Status */}
+        {subscription.isSubscribed && (
+          <div className="mt-6 inline-flex items-center space-x-2 bg-green-500/10 border border-green-500/20 rounded-full px-4 py-2">
+            <Check className="w-4 h-4 text-green-400" />
+            <span className="text-green-400 font-medium">
+              Currently subscribed to {subscription.subscriptionTier.replace('_', ' ')}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Pricing Cards */}
@@ -120,7 +206,7 @@ export default function Subscription() {
                 plan.popular
                   ? 'border-blue-500/50 shadow-lg shadow-blue-500/20'
                   : 'border-gray-700/50 hover:border-gray-600/50'
-              }`}
+              } ${plan.disabled ? 'opacity-75' : ''}`}
             >
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
@@ -173,9 +259,9 @@ export default function Subscription() {
               </div>
 
               <button
-                onClick={() => setSelectedPlan(plan.id)}
+                onClick={() => handlePlanSelect(plan.id)}
                 className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-200 ${plan.buttonClass}`}
-                disabled={plan.id === 'free'}
+                disabled={plan.disabled}
               >
                 {plan.buttonText}
               </button>
@@ -183,6 +269,37 @@ export default function Subscription() {
           );
         })}
       </div>
+
+      {/* One-time Purchases */}
+      {subscription.subscriptionTier !== 'ultimate_bundle' && (
+        <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-8">
+          <h2 className="text-2xl font-bold text-white mb-6">Individual AI Tools</h2>
+          <p className="text-gray-400 mb-6">
+            Purchase individual AI-powered tools without a subscription. Perfect for specific needs.
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {oneTimePurchases.map((product) => (
+              <div key={product.id} className="bg-gray-700/30 rounded-xl p-6 border border-gray-600/30 hover:border-blue-500/30 transition-all duration-300">
+                <div className="text-center mb-4">
+                  <div className="text-4xl mb-3">{product.icon}</div>
+                  <h3 className="text-lg font-semibold text-white mb-2">{product.name}</h3>
+                  <p className="text-gray-400 text-sm mb-4">{product.description}</p>
+                  <p className="text-2xl font-bold text-green-400">${product.price}</p>
+                </div>
+                
+                <button
+                  onClick={() => handleProductPurchase(product)}
+                  className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2"
+                >
+                  <CreditCard className="w-4 h-4" />
+                  <span>Purchase</span>
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Security Features */}
       <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-8">
@@ -277,6 +394,23 @@ export default function Subscription() {
           </div>
         </div>
       </div>
+
+      {/* Modals */}
+      <SubscriptionModal
+        isOpen={showSubscriptionModal}
+        onClose={() => setShowSubscriptionModal(false)}
+      />
+
+      {selectedProduct && (
+        <PaymentModal
+          isOpen={showPaymentModal}
+          onClose={() => {
+            setShowPaymentModal(false);
+            setSelectedProduct(null);
+          }}
+          product={selectedProduct}
+        />
+      )}
     </div>
   );
 }
