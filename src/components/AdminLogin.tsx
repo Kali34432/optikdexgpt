@@ -5,6 +5,16 @@ import { adminAPI } from '../services/adminAPI';
 interface AdminLoginProps {
   onLogin: (success: boolean) => void;
 }
+// src/pages/AdminLogin.tsx
+
+const login = () => {
+  if (username === 'admin' && password === 'secret123') {
+    localStorage.setItem('isAdmin', 'true');
+    navigate('/admin/dashboard');
+  } else {
+    alert('Invalid credentials');
+  }
+};
 
 export default function AdminLogin({ onLogin }: AdminLoginProps) {
   const [step, setStep] = useState<'credentials' | '2fa'>('credentials');
