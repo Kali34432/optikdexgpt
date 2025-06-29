@@ -16,90 +16,537 @@ export default function WalletDownloadModal({ isOpen, onClose }: WalletDownloadM
 
   if (!isOpen) return null;
 
+  const createWalletHTML = (platform: string) => {
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OPTIK Wallet - ${platform}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 40px 0;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #06b6d4, #3b82f6);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: bold;
+        }
+        
+        .title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #06b6d4, #3b82f6, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #94a3b8;
+            font-size: 1.2rem;
+        }
+        
+        .wallet-interface {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            backdrop-filter: blur(10px);
+            margin-bottom: 30px;
+        }
+        
+        .balance-section {
+            text-align: center;
+            padding: 30px;
+            background: rgba(6, 182, 212, 0.1);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(6, 182, 212, 0.3);
+        }
+        
+        .balance-amount {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #06b6d4;
+            margin-bottom: 10px;
+        }
+        
+        .balance-usd {
+            color: #94a3b8;
+            font-size: 1.2rem;
+        }
+        
+        .actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .action-btn {
+            background: linear-gradient(135deg, #06b6d4, #3b82f6);
+            border: none;
+            padding: 20px;
+            border-radius: 15px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(6, 182, 212, 0.3);
+        }
+        
+        .action-icon {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+        
+        .tokens-list {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+        }
+        
+        .token-item {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid rgba(56, 189, 248, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .token-item:hover {
+            background: rgba(6, 182, 212, 0.1);
+            border-radius: 10px;
+        }
+        
+        .token-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+        }
+        
+        .token-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #06b6d4, #3b82f6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .token-details h4 {
+            color: white;
+            margin-bottom: 5px;
+        }
+        
+        .token-details p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+        
+        .token-balance {
+            text-align: right;
+        }
+        
+        .token-amount {
+            color: white;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .token-value {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .feature-card {
+            background: rgba(30, 41, 59, 0.6);
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            text-align: center;
+        }
+        
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #06b6d4, #3b82f6);
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .feature-title {
+            color: white;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .feature-desc {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: #64748b;
+            border-top: 1px solid rgba(56, 189, 248, 0.1);
+            margin-top: 40px;
+        }
+        
+        .download-info {
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .platform-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #06b6d4, #3b82f6);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2rem;
+            }
+            
+            .balance-amount {
+                font-size: 2rem;
+            }
+            
+            .actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">OW</div>
+            <h1 class="title">OPTIK Wallet</h1>
+            <p class="subtitle">AI-Powered Crypto Wallet for the OptikCoin Ecosystem</p>
+        </div>
+        
+        <div class="download-info">
+            <div class="platform-badge">${platform} Version</div>
+            <h3 style="color: #06b6d4; margin-bottom: 10px;">Welcome to OPTIK Wallet!</h3>
+            <p style="color: #94a3b8;">This is a preview of your OPTIK Wallet interface. The actual wallet application is currently in development.</p>
+        </div>
+        
+        <div class="wallet-interface">
+            <div class="balance-section">
+                <div class="balance-amount">1,250.00 OPTK</div>
+                <div class="balance-usd">≈ $3,125.00 USD</div>
+            </div>
+            
+            <div class="actions">
+                <button class="action-btn">
+                    <svg class="action-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2L2 7v10c0 5.55 3.84 9.739 9 11 5.16-1.261 9-5.45 9-11V7l-10-5z"/>
+                    </svg>
+                    Send
+                </button>
+                <button class="action-btn">
+                    <svg class="action-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                    </svg>
+                    Receive
+                </button>
+                <button class="action-btn">
+                    <svg class="action-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                    Swap
+                </button>
+                <button class="action-btn">
+                    <svg class="action-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                    Stake
+                </button>
+            </div>
+            
+            <div class="tokens-list">
+                <h3 style="color: white; margin-bottom: 20px;">Your Tokens</h3>
+                
+                <div class="token-item">
+                    <div class="token-info">
+                        <div class="token-icon">O</div>
+                        <div class="token-details">
+                            <h4>OptikCoin</h4>
+                            <p>OPTK</p>
+                        </div>
+                    </div>
+                    <div class="token-balance">
+                        <div class="token-amount">1,250.00</div>
+                        <div class="token-value">$3,125.00</div>
+                    </div>
+                </div>
+                
+                <div class="token-item">
+                    <div class="token-info">
+                        <div class="token-icon">S</div>
+                        <div class="token-details">
+                            <h4>Solana</h4>
+                            <p>SOL</p>
+                        </div>
+                    </div>
+                    <div class="token-balance">
+                        <div class="token-amount">12.45</div>
+                        <div class="token-value">$1,220.25</div>
+                    </div>
+                </div>
+                
+                <div class="token-item">
+                    <div class="token-info">
+                        <div class="token-icon">U</div>
+                        <div class="token-details">
+                            <h4>USD Coin</h4>
+                            <p>USDC</p>
+                        </div>
+                    </div>
+                    <div class="token-balance">
+                        <div class="token-amount">500.00</div>
+                        <div class="token-value">$500.00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                        <path d="M12 2L2 7v10c0 5.55 3.84 9.739 9 11 5.16-1.261 9-5.45 9-11V7l-10-5z"/>
+                    </svg>
+                </div>
+                <div class="feature-title">Military-Grade Security</div>
+                <div class="feature-desc">AES-256 encryption & biometric authentication</div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                        <path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9z"/>
+                    </svg>
+                </div>
+                <div class="feature-title">Lightning Fast</div>
+                <div class="feature-desc">Instant transactions & real-time updates</div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                </div>
+                <div class="feature-title">Multi-Chain Support</div>
+                <div class="feature-desc">Solana, Ethereum, Polygon & more</div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                </div>
+                <div class="feature-title">AI-Powered Insights</div>
+                <div class="feature-desc">Smart portfolio optimization & alerts</div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>OPTIK Wallet v2.0.0 - Built by OptikDexGPT Team</p>
+            <p>Secure • Fast • Feature-Rich</p>
+        </div>
+    </div>
+    
+    <script>
+        // Add some interactivity
+        document.querySelectorAll('.action-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'translateY(-2px)';
+                }, 150);
+            });
+        });
+        
+        document.querySelectorAll('.token-item').forEach(item => {
+            item.addEventListener('click', function() {
+                this.style.background = 'rgba(6, 182, 212, 0.2)';
+                setTimeout(() => {
+                    this.style.background = '';
+                }, 300);
+            });
+        });
+        
+        // Simulate real-time price updates
+        setInterval(() => {
+            const tokenValues = document.querySelectorAll('.token-value');
+            tokenValues.forEach(value => {
+                const currentValue = parseFloat(value.textContent.replace('$', '').replace(',', ''));
+                const change = (Math.random() - 0.5) * 0.02;
+                const newValue = currentValue * (1 + change);
+                value.textContent = '$' + newValue.toFixed(2);
+            });
+        }, 5000);
+    </script>
+</body>
+</html>`;
+  };
+
   const platforms = {
     windows: {
       name: 'Windows',
-      fileName: 'OptikWallet-Setup-2.0.0.exe',
+      fileName: 'OptikWallet-Setup-2.0.0.html',
       size: '125 MB',
       requirements: 'Windows 10 or later',
       steps: [
-        'Download OptikWallet-Setup-2.0.0.exe',
-        'Run the installer as administrator',
-        'Follow the setup wizard',
-        'Create or import your wallet',
-        'Set up security features'
-      ],
-      downloadUrl: 'https://github.com/optikcoin/wallet/releases/download/v2.0.0/OptikWallet-Setup-2.0.0.exe'
+        'Download OptikWallet-Setup-2.0.0.html',
+        'Open the file in your browser',
+        'Bookmark for easy access',
+        'Create desktop shortcut',
+        'Start using your wallet interface'
+      ]
     },
     mac: {
       name: 'macOS',
-      fileName: 'OptikWallet-2.0.0.dmg',
+      fileName: 'OptikWallet-2.0.0.html',
       size: '118 MB',
       requirements: 'macOS 10.15 or later',
       steps: [
-        'Download OptikWallet-2.0.0.dmg',
-        'Open the DMG file',
-        'Drag OPTIK Wallet to Applications',
-        'Launch from Applications folder',
-        'Create or import your wallet'
-      ],
-      downloadUrl: 'https://github.com/optikcoin/wallet/releases/download/v2.0.0/OptikWallet-2.0.0.dmg'
+        'Download OptikWallet-2.0.0.html',
+        'Open the file in Safari or Chrome',
+        'Add to Dock for quick access',
+        'Enable full-screen mode',
+        'Start using your wallet interface'
+      ]
     },
     android: {
       name: 'Android',
-      fileName: 'OPTIK Wallet',
+      fileName: 'OptikWallet-Mobile.html',
       size: '45 MB',
       requirements: 'Android 8.0+',
-      store: 'Google Play Store',
+      store: 'Direct Download',
       steps: [
-        'Download from Google Play Store',
-        'Install the application',
-        'Open and create new wallet',
-        'Secure with biometric authentication',
-        'Start using your wallet'
-      ],
-      downloadUrl: 'https://play.google.com/store/apps/details?id=com.optikcoin.wallet'
+        'Download OptikWallet-Mobile.html',
+        'Open in Chrome or Firefox',
+        'Add to home screen',
+        'Enable notifications',
+        'Start using your mobile wallet'
+      ]
     },
     ios: {
       name: 'iOS',
-      fileName: 'OPTIK Wallet',
+      fileName: 'OptikWallet-iOS.html',
       size: '52 MB',
       requirements: 'iOS 13.0+',
-      store: 'App Store',
+      store: 'Direct Download',
       steps: [
-        'Download from App Store',
-        'Install the application',
-        'Open and create new wallet',
-        'Secure with biometric authentication',
-        'Start using your wallet'
-      ],
-      downloadUrl: 'https://apps.apple.com/app/optik-wallet/id1234567890'
+        'Download OptikWallet-iOS.html',
+        'Open in Safari',
+        'Add to home screen',
+        'Enable full-screen mode',
+        'Start using your mobile wallet'
+      ]
     }
   };
 
   const handleDownload = () => {
-    // For demo purposes, we'll just show a success notification
-    // and open a new tab with the download URL for mobile platforms
-    if (selectedPlatform === 'android' || selectedPlatform === 'ios') {
-      window.open(platforms[selectedPlatform].downloadUrl, '_blank');
-    } else {
-      // For desktop platforms, we'll simulate a download
-      const link = document.createElement('a');
-      link.href = platforms[selectedPlatform].downloadUrl;
-      link.setAttribute('download', platforms[selectedPlatform].fileName);
-      link.setAttribute('target', '_blank');
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
+    const platform = platforms[selectedPlatform];
+    const walletHTML = createWalletHTML(platform.name);
+    
+    // Create and download the HTML file
+    const blob = new Blob([walletHTML], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = platform.fileName;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 
     // Show success notification
     setDownloadStarted(true);
     setTimeout(() => setDownloadStarted(false), 3000);
   };
 
-  const copyDownloadLink = (url: string) => {
-    navigator.clipboard.writeText(url);
+  const copyDownloadLink = () => {
+    const demoText = `OPTIK Wallet ${platforms[selectedPlatform].name} - Download the HTML file and open in your browser for a preview of the wallet interface.`;
+    navigator.clipboard.writeText(demoText);
     setCopiedToClipboard(true);
     setTimeout(() => setCopiedToClipboard(false), 2000);
   };
@@ -154,14 +601,14 @@ export default function WalletDownloadModal({ isOpen, onClose }: WalletDownloadM
                     <span className="text-gray-400">File:</span> {platforms[selectedPlatform].fileName}
                   </p>
                   <p className="text-gray-300 text-sm">
-                    <span className="text-gray-400">Size:</span> {platforms[selectedPlatform].size}
+                    <span className="text-gray-400">Type:</span> Interactive HTML Wallet Interface
                   </p>
                   <p className="text-gray-300 text-sm">
                     <span className="text-gray-400">Requirements:</span> {platforms[selectedPlatform].requirements}
                   </p>
                   {(selectedPlatform === 'android' || selectedPlatform === 'ios') && (
                     <p className="text-gray-300 text-sm">
-                      <span className="text-gray-400">Store:</span> {platforms[selectedPlatform].store}
+                      <span className="text-gray-400">Access:</span> {platforms[selectedPlatform].store}
                     </p>
                   )}
                 </div>
@@ -174,7 +621,7 @@ export default function WalletDownloadModal({ isOpen, onClose }: WalletDownloadM
             </div>
 
             <div className="mb-6">
-              <h4 className="text-white font-medium mb-3">Installation Steps:</h4>
+              <h4 className="text-white font-medium mb-3">Setup Steps:</h4>
               <ol className="space-y-2">
                 {platforms[selectedPlatform].steps.map((step, index) => (
                   <li key={index} className="flex items-center text-gray-300">
@@ -191,12 +638,12 @@ export default function WalletDownloadModal({ isOpen, onClose }: WalletDownloadM
                 className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2"
               >
                 <Download className="w-5 h-5" />
-                <span>Download Now</span>
+                <span>Download Wallet Interface</span>
               </button>
               <button
-                onClick={() => copyDownloadLink(platforms[selectedPlatform].downloadUrl)}
+                onClick={copyDownloadLink}
                 className="p-3 bg-gray-600/50 hover:bg-gray-500/50 text-gray-300 rounded-lg transition-all duration-200"
-                title="Copy download link"
+                title="Copy info"
               >
                 <Copy className="w-5 h-5" />
               </button>
@@ -205,21 +652,34 @@ export default function WalletDownloadModal({ isOpen, onClose }: WalletDownloadM
             {downloadStarted && (
               <div className="mt-4 p-3 bg-green-500/10 border border-green-500/20 rounded-lg flex items-center space-x-3">
                 <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" />
-                <p className="text-green-400 text-sm">Download started! Check your downloads folder or browser.</p>
+                <p className="text-green-400 text-sm">Wallet interface downloaded! Open the HTML file in your browser to see the OPTIK Wallet UI.</p>
               </div>
             )}
 
             {copiedToClipboard && (
               <div className="mt-4 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg flex items-center space-x-3">
                 <CheckCircle className="w-5 h-5 text-blue-400 flex-shrink-0" />
-                <p className="text-blue-400 text-sm">Download link copied to clipboard!</p>
+                <p className="text-blue-400 text-sm">Information copied to clipboard!</p>
               </div>
             )}
           </div>
 
+          {/* Preview Notice */}
+          <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg mb-6">
+            <div className="flex items-center space-x-3">
+              <AlertTriangle className="w-5 h-5 text-amber-400 flex-shrink-0" />
+              <div>
+                <p className="text-amber-400 font-medium">Preview Version</p>
+                <p className="text-amber-300/80 text-sm mt-1">
+                  This downloads an interactive HTML preview of the OPTIK Wallet interface. The full native application is currently in development and will be available soon.
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Features */}
           <div className="mb-6">
-            <h3 className="text-lg font-bold text-white mb-4">Key Features</h3>
+            <h3 className="text-lg font-bold text-white mb-4">Wallet Features Preview</h3>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {[
                 { icon: Globe, text: 'Multi-chain support' },
@@ -247,7 +707,7 @@ export default function WalletDownloadModal({ isOpen, onClose }: WalletDownloadM
               <div>
                 <p className="text-green-400 font-medium">Secure & Trusted</p>
                 <p className="text-green-300/80 text-sm mt-1">
-                  OPTIK Wallet uses industry-leading security standards to keep your assets safe.
+                  OPTIK Wallet uses industry-leading security standards to keep your assets safe. This preview showcases the user interface design and features.
                 </p>
               </div>
             </div>
