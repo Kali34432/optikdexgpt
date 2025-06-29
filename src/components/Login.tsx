@@ -174,10 +174,29 @@ export default function Login({ onLogin }: LoginProps) {
   const parseSupabaseError = (error: any): string => {
     const message = error.message || '';
     
-    // Handle rate limiting errors
-    if (message.includes('over_email_send_rate_limit')) {
-      const match = message.match(/after (\d+) seconds/);
-      const seconds = match ? parseInt(match[1]) : 60;
+    // Handle rate limiting errors with improved parsing
+    if (message.includes('over_email_send_rate_limit') || error.code === 'over_email_send_rate_limit') {
+      // Try to extract seconds from different possible message formats
+      let seconds = 60; // Default fallback
+      
+      // Look for "after X seconds" pattern
+      const afterMatch = message.match(/after (\d+) seconds/);
+      if (afterMatch) {
+        seconds = parseInt(afterMatch[1]);
+      } else {
+        // Look for "this after X seconds" pattern
+        const thisAfterMatch = message.match(/this after (\d+) seconds/);
+        if (thisAfterMatch) {
+          seconds = parseInt(thisAfterMatch[1]);
+        } else {
+          // Look for any number followed by "seconds"
+          const generalMatch = message.match(/(\d+) seconds/);
+          if (generalMatch) {
+            seconds = parseInt(generalMatch[1]);
+          }
+        }
+      }
+      
       setResendCooldown(seconds);
       return `Too many email requests. Please wait ${seconds} seconds before trying again.`;
     }
@@ -284,6 +303,7 @@ export default function Login({ onLogin }: LoginProps) {
 
     setIsLoading(true);
     setError('');
+    setSuccess('');
 
     try {
       const { error } = await supabase.auth.resend({
@@ -299,7 +319,7 @@ export default function Login({ onLogin }: LoginProps) {
         setError(errorMessage);
       } else {
         setSuccess('Verification email sent! Please check your inbox.');
-        setResendCooldown(60); // Set a default cooldown
+        setResendCooldown(60); // Set a default cooldown if none was set by error
       }
     } catch (err: any) {
       const errorMessage = parseSupabaseError(err);
@@ -401,6 +421,15 @@ export default function Login({ onLogin }: LoginProps) {
                 <strong>Note:</strong> Check your spam folder if you don't see the email within a few minutes.
               </p>
             </div>
+
+            {/* Rate Limit Information */}
+            {resendCooldown > 0 && (
+              <div className="mt-4 p-4 bg-orange-500/10 border border-orange-500/20 rounded-lg">
+                <p className="text-orange-400 text-sm text-center">
+                  <strong>Rate Limited:</strong> For security, email sending is temporarily restricted. The resend button will be available in {resendCooldown} seconds.
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
