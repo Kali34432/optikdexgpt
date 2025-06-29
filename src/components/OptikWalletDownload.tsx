@@ -151,7 +151,7 @@ export default function OptikWalletDownload() {
         
         .token-item {
             display: flex;
-            justify-content: space-between;
+            justify-between;
             align-items: center;
             padding: 15px;
             border-bottom: 1px solid rgba(56, 189, 248, 0.1);
