@@ -15,11 +15,12 @@ export default function SubscriptionModal({ isOpen, onClose, selectedPlan = 'pro
   const plans = {
     pro_creator: {
       name: 'Pro Creator',
-      price: 49.99,
+      price: 19.99,
       interval: 'month',
-      description: 'Complete meme coin creation toolkit',
+      description: 'Access to all specialized GPT assistants',
       features: [
         'Unlimited AI assistance',
+        'All specialized GPT assistants',
         'Advanced trading analytics',
         'Anti-bot protection tools',
         'Smart contract templates',
@@ -31,15 +32,14 @@ export default function SubscriptionModal({ isOpen, onClose, selectedPlan = 'pro
       color: 'blue'
     },
     ultimate_bundle: {
-      name: 'Ultimate Creator Bundle',
-      price: 799.99,
+      name: 'Meme Coin Creator',
+      price: 499.99,
       interval: 'one-time',
-      monthlyPrice: 99.99,
-      description: 'Complete token launch with all AI tools',
+      description: 'Complete token launch with Optik matched liquidity',
       features: [
         'Everything in Pro Creator',
         'Token creation & deployment',
-        'Minimum liquidity funding',
+        'Optik matched liquidity funding',
         'OPTK backing support',
         'Optik Website Builder AI',
         'Optik Viral GPT marketing',
@@ -48,8 +48,7 @@ export default function SubscriptionModal({ isOpen, onClose, selectedPlan = 'pro
         'Meme Coin Promotion GPT',
         'Launch marketing boost',
         'Dedicated launch support',
-        'Post-launch monitoring',
-        'Ongoing monthly AI access'
+        'Post-launch monitoring'
       ],
       color: 'purple'
     }
@@ -113,9 +112,9 @@ export default function SubscriptionModal({ isOpen, onClose, selectedPlan = 'pro
                           : 'border-gray-600/30 hover:border-gray-500/50 bg-gray-700/30'
                       }`}
                     >
-                      {key === 'ultimate_bundle' && (
+                      {key === 'pro_creator' && (
                         <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                          <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-1 rounded-full text-sm font-medium">
+                          <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-1 rounded-full text-sm font-medium">
                             Most Popular
                           </div>
                         </div>
@@ -131,15 +130,10 @@ export default function SubscriptionModal({ isOpen, onClose, selectedPlan = 'pro
                         </div>
                         <h3 className="text-xl font-bold text-white mb-2">{plan.name}</h3>
                         <div className="mb-4">
-                          <span className="text-3xl font-bold text-white">${plan.price}</span>
+                          <span className="text-3xl font-bold text-white">${plan.price.toFixed(2)}</span>
                           <span className="text-gray-400 ml-2">
                             {plan.interval === 'one-time' ? 'one-time' : `/${plan.interval}`}
                           </span>
-                          {plan.monthlyPrice && (
-                            <div className="text-sm text-gray-400 mt-1">
-                              + ${plan.monthlyPrice}/month ongoing
-                            </div>
-                          )}
                         </div>
                         <p className="text-gray-400 text-sm">{plan.description}</p>
                       </div>
@@ -182,16 +176,11 @@ export default function SubscriptionModal({ isOpen, onClose, selectedPlan = 'pro
                   </div>
                   <div className="text-right">
                     <p className="text-2xl font-bold text-white">
-                      ${plans[selectedPlanType].price}
+                      ${plans[selectedPlanType].price.toFixed(2)}
                     </p>
                     <p className="text-gray-400 text-sm">
                       {plans[selectedPlanType].interval === 'one-time' ? 'one-time' : `/${plans[selectedPlanType].interval}`}
                     </p>
-                    {plans[selectedPlanType].monthlyPrice && (
-                      <p className="text-gray-400 text-sm">
-                        + ${plans[selectedPlanType].monthlyPrice}/month
-                      </p>
-                    )}
                   </div>
                 </div>
               </div>

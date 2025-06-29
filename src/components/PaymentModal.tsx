@@ -66,7 +66,7 @@ export default function PaymentModal({ isOpen, onClose, product }: PaymentModalP
                     <p className="text-gray-400 text-sm">{product.description}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-2xl font-bold text-white">${product.price}</p>
+                    <p className="text-2xl font-bold text-white">${product.price.toFixed(2)}</p>
                     <p className="text-gray-400 text-sm">one-time purchase</p>
                   </div>
                 </div>
