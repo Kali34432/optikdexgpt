@@ -1,37 +1,135 @@
-// pages/api/kyc/verify.ts
-import type { NextApiRequest, NextApiResponse } from 'next';
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY! // NOT anon key
-);
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method Not Allowed' });
-  }
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error('Missing Supabase environment variables');
+}
 
-  const { fullName, email, country, idNumber, publicKey } = req.body;
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-  if (!fullName || !email || !country || !idNumber) {
-    return res.status(400).json({ message: 'Missing required fields' });
-  }
-
+// Client-side function to create payment intent
+export async function createPaymentIntent(amount: number, currency: string = 'usd') {
   try {
-    const { error } = await supabase.from('admin_kyc').insert({
-      full_name: fullName,
-      email,
-      country,
-      id_number: idNumber,
-      public_key: publicKey || null,
-      verified_at: new Date().toISOString(),
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    const response = await fetch(`${supabaseUrl}/functions/v1/create-payment-intent`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session?.access_token || supabaseAnonKey}`,
+      },
+      body: JSON.stringify({ amount, currency }),
     });
 
-    if (error) throw error;
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
-    return res.status(200).json({ message: 'KYC verified and recorded' });
-  } catch (err: any) {
-    return res.status(500).json({ message: err.message || 'Server error' });
+    return await response.json();
+  } catch (error) {
+    console.error('Error creating payment intent:', error);
+    throw error;
+  }
+}
+
+// Client-side function to create subscription
+export async function createSubscription(priceId: string) {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    const response = await fetch(`${supabaseUrl}/functions/v1/create-subscription`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session?.access_token || supabaseAnonKey}`,
+      },
+      body: JSON.stringify({ priceId }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error creating subscription:', error);
+    throw error;
+  }
+}
+
+// Client-side function to create token
+export async function createToken(tokenData: any) {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    const response = await fetch(`${supabaseUrl}/functions/v1/token-operations`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session?.access_token || supabaseAnonKey}`,
+      },
+      body: JSON.stringify(tokenData),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error creating token:', error);
+    throw error;
+  }
+}
+
+// Client-side function for mining operations
+export async function performMiningOperation(operationType: string, data: any) {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    const response = await fetch(`${supabaseUrl}/functions/v1/mining-operations`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session?.access_token || supabaseAnonKey}`,
+      },
+      body: JSON.stringify({ operationType, ...data }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error performing mining operation:', error);
+    throw error;
+  }
+}
+
+// Client-side function for staking operations
+export async function performStakingOperation(operationType: string, data: any) {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    const response = await fetch(`${supabaseUrl}/functions/v1/staking-operations`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session?.access_token || supabaseAnonKey}`,
+      },
+      body: JSON.stringify({ operationType, ...data }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error performing staking operation:', error);
+    throw error;
   }
 }
