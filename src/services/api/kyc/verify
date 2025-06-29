@@ -1,4 +1,5 @@
 // Next.js or Express-style handler
+
 app.post('/api/kyc/verify', async (req, res) => {
   const { fullName, email, country, idNumber } = req.body;
 
