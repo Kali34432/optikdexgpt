@@ -20,13 +20,16 @@ import AdminLogin from './components/AdminLogin';
 import AdminDashboard from './components/AdminDashboard';
 import OptikGPTSidebar from './components/OptikGPTSidebar';
 import WalletPage from './routes/WalletPage';
+import WalletDownloadModal from './components/WalletDownloadModal';
 
 function App() {
   const [activeTab, setActiveTab] = useState('analytics');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdminMode, setIsAdminMode] = useState(false);
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+  const [adminPublicKey, setAdminPublicKey] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [showWalletModal, setShowWalletModal] = useState(false);
 
   // Check authentication status on app load
   useEffect(() => {
@@ -74,6 +77,12 @@ function App() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
+
+  // Handle admin login
+  const handleAdminLogin = (success: boolean, publicKey: string) => {
+    setIsAdminLoggedIn(success);
+    setAdminPublicKey(publicKey);
+  };
 
   const renderActiveComponent = () => {
     switch (activeTab) {
@@ -132,7 +141,7 @@ function App() {
             {/* Admin Mode */}
             {isAdminMode ? (
               !isAdminLoggedIn ? (
-                <AdminLogin onLogin={setIsAdminLoggedIn} />
+                <AdminLogin onLogin={handleAdminLogin} />
               ) : (
                 <AdminDashboard />
               )
@@ -165,8 +174,17 @@ function App() {
             {isAdminMode && (
               <div className="fixed bottom-4 right-4 bg-red-600/20 border border-red-500/30 rounded-lg px-3 py-2">
                 <p className="text-red-400 text-sm font-medium">Admin Mode Active</p>
+                {isAdminLoggedIn && adminPublicKey && (
+                  <p className="text-red-300 text-xs">{adminPublicKey.slice(0, 8)}...{adminPublicKey.slice(-4)}</p>
+                )}
               </div>
             )}
+
+            {/* Global Wallet Download Modal */}
+            <WalletDownloadModal
+              isOpen={showWalletModal}
+              onClose={() => setShowWalletModal(false)}
+            />
           </div>
         } />
       </Routes>

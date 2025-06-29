@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { TrendingUp, MessageSquare, ArrowRightLeft, Wallet, Rocket, BarChart3, CreditCard, FileText, Map, Pickaxe, Coins, Gift, Menu, X, ExternalLink, Brain, Download, Shield, CheckCircle } from 'lucide-react';
@@ -15,6 +15,19 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [showKYCModal, setShowKYCModal] = useState(false);
   const { connected, publicKey } = useWallet();
+
+  // Listen for custom event to open wallet download modal
+  useEffect(() => {
+    const handleOpenWalletModal = () => {
+      setShowWalletModal(true);
+    };
+    
+    window.addEventListener('open-wallet-download-modal', handleOpenWalletModal);
+    
+    return () => {
+      window.removeEventListener('open-wallet-download-modal', handleOpenWalletModal);
+    };
+  }, []);
 
   const navigationItems = [
     { id: 'analytics', label: 'Analytics', icon: TrendingUp, type: 'internal' },
@@ -67,9 +80,9 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
             <div className="flex items-center">
               <div className="flex-shrink-0 flex items-center space-x-3">
                 <img 
-                  src="/src/assets/logo.png" 
+                  src="https://via.placeholder.com/40/0891b2/FFFFFF?text=OC" 
                   alt="OptikCoin Logo" 
-                  className="w-10 h-10"
+                  className="w-10 h-10 rounded-full"
                 />
                 <div>
                   <h1 className="text-xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-300 bg-clip-text text-transparent">
@@ -143,7 +156,7 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
                       <span className="text-cyan-400 text-sm font-medium">Wallet Connected</span>
                     </div>
                     <p className="text-gray-300 text-xs mt-1">
-                      {formatWalletAddress(publicKey.toString())}
+                      {formatWalletAddress(publicKey?.toString())}
                     </p>
                   </div>
                 )}

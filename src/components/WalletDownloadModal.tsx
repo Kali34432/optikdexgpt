@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
-  X, Wallet, Download, Smartphone, Shield, 
-  Globe, Zap, Star, CheckCircle, Copy 
+  X, Wallet, Download, Smartphone, Shield, Globe, Zap, 
+  Star, CheckCircle, ExternalLink, Copy, AlertTriangle 
 } from 'lucide-react';
 
 interface WalletDownloadModalProps {
@@ -12,6 +12,7 @@ interface WalletDownloadModalProps {
 export default function WalletDownloadModal({ isOpen, onClose }: WalletDownloadModalProps) {
   const [selectedPlatform, setSelectedPlatform] = useState<'windows' | 'mac' | 'android' | 'ios'>('windows');
   const [downloadStarted, setDownloadStarted] = useState(false);
+  const [copiedToClipboard, setCopiedToClipboard] = useState(false);
 
   if (!isOpen) return null;
 
@@ -27,7 +28,8 @@ export default function WalletDownloadModal({ isOpen, onClose }: WalletDownloadM
         'Follow the setup wizard',
         'Create or import your wallet',
         'Set up security features'
-      ]
+      ],
+      downloadUrl: 'https://github.com/optikcoin/wallet/releases/download/v2.0.0/OptikWallet-Setup-2.0.0.exe'
     },
     mac: {
       name: 'macOS',
@@ -40,7 +42,8 @@ export default function WalletDownloadModal({ isOpen, onClose }: WalletDownloadM
         'Drag OPTIK Wallet to Applications',
         'Launch from Applications folder',
         'Create or import your wallet'
-      ]
+      ],
+      downloadUrl: 'https://github.com/optikcoin/wallet/releases/download/v2.0.0/OptikWallet-2.0.0.dmg'
     },
     android: {
       name: 'Android',
@@ -54,7 +57,8 @@ export default function WalletDownloadModal({ isOpen, onClose }: WalletDownloadM
         'Open and create new wallet',
         'Secure with biometric authentication',
         'Start using your wallet'
-      ]
+      ],
+      downloadUrl: 'https://play.google.com/store/apps/details?id=com.optikcoin.wallet'
     },
     ios: {
       name: 'iOS',
@@ -68,66 +72,36 @@ export default function WalletDownloadModal({ isOpen, onClose }: WalletDownloadM
         'Open and create new wallet',
         'Secure with biometric authentication',
         'Start using your wallet'
-      ]
+      ],
+      downloadUrl: 'https://apps.apple.com/app/optik-wallet/id1234567890'
     }
   };
 
   const handleDownload = () => {
-    // Create wallet installer package
-    const walletInstaller = {
-      name: 'OPTIK Wallet',
-      version: '2.0.0',
-      description: 'The most advanced crypto wallet for the OptikCoin ecosystem',
-      platform: platforms[selectedPlatform].name,
-      fileName: platforms[selectedPlatform].fileName,
-      size: platforms[selectedPlatform].size,
-      requirements: platforms[selectedPlatform].requirements,
-      installationSteps: platforms[selectedPlatform].steps,
-      features: [
-        'Multi-chain support (Solana, Ethereum, Polygon, BSC)',
-        'Hardware wallet integration (Ledger, Trezor)',
-        'DeFi protocols integration',
-        'NFT management and trading',
-        'Staking and yield farming',
-        'Cross-chain swaps',
-        'AI-powered portfolio insights',
-        'Advanced security features',
-        'Biometric authentication',
-        'Real-time price alerts'
-      ],
-      security: {
-        encryption: 'AES-256',
-        biometric: true,
-        hardware: true,
-        multiSig: true,
-        seedPhrase: true,
-        pinCode: true
-      },
-      support: {
-        documentation: 'https://docs.optikcoin.com/wallet',
-        support: 'https://support.optikcoin.com',
-        community: 'https://discord.gg/optikcoin',
-        github: 'https://github.com/optikcoin/wallet'
-      }
-    };
-
-    // Create downloadable installer file
-    const blob = new Blob([JSON.stringify(walletInstaller, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `OptikWallet-${selectedPlatform}-Installer-v2.0.0.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+    // For demo purposes, we'll just show a success notification
+    // and open a new tab with the download URL for mobile platforms
+    if (selectedPlatform === 'android' || selectedPlatform === 'ios') {
+      window.open(platforms[selectedPlatform].downloadUrl, '_blank');
+    } else {
+      // For desktop platforms, we'll simulate a download
+      const link = document.createElement('a');
+      link.href = platforms[selectedPlatform].downloadUrl;
+      link.setAttribute('download', platforms[selectedPlatform].fileName);
+      link.setAttribute('target', '_blank');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
 
     // Show success notification
     setDownloadStarted(true);
     setTimeout(() => setDownloadStarted(false), 3000);
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    alert('Copied to clipboard!');
+  const copyDownloadLink = (url: string) => {
+    navigator.clipboard.writeText(url);
+    setCopiedToClipboard(true);
+    setTimeout(() => setCopiedToClipboard(false), 2000);
   };
 
   return (
@@ -211,18 +185,34 @@ export default function WalletDownloadModal({ isOpen, onClose }: WalletDownloadM
               </ol>
             </div>
 
-            <button
-              onClick={handleDownload}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2"
-            >
-              <Download className="w-5 h-5" />
-              <span>Download Now</span>
-            </button>
+            <div className="flex space-x-2">
+              <button
+                onClick={handleDownload}
+                className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2"
+              >
+                <Download className="w-5 h-5" />
+                <span>Download Now</span>
+              </button>
+              <button
+                onClick={() => copyDownloadLink(platforms[selectedPlatform].downloadUrl)}
+                className="p-3 bg-gray-600/50 hover:bg-gray-500/50 text-gray-300 rounded-lg transition-all duration-200"
+                title="Copy download link"
+              >
+                <Copy className="w-5 h-5" />
+              </button>
+            </div>
 
             {downloadStarted && (
               <div className="mt-4 p-3 bg-green-500/10 border border-green-500/20 rounded-lg flex items-center space-x-3">
                 <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" />
-                <p className="text-green-400 text-sm">Download started! Check your downloads folder.</p>
+                <p className="text-green-400 text-sm">Download started! Check your downloads folder or browser.</p>
+              </div>
+            )}
+
+            {copiedToClipboard && (
+              <div className="mt-4 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg flex items-center space-x-3">
+                <CheckCircle className="w-5 h-5 text-blue-400 flex-shrink-0" />
+                <p className="text-blue-400 text-sm">Download link copied to clipboard!</p>
               </div>
             )}
           </div>

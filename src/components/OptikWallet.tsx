@@ -210,49 +210,8 @@ export default function OptikWallet() {
   };
 
   const downloadWallet = () => {
-    // Create wallet data
-    const walletData = {
-      name: 'OPTIK Wallet',
-      version: '2.0.0',
-      type: 'Solana SPL Wallet',
-      features: [
-        'Multi-chain support',
-        'Hardware wallet integration',
-        'DeFi protocols',
-        'NFT management',
-        'Staking rewards',
-        'Cross-chain swaps',
-        'AI-powered insights',
-        'Advanced security'
-      ],
-      security: {
-        encryption: 'AES-256',
-        biometric: true,
-        hardware: true,
-        multiSig: true
-      },
-      networks: ['Solana', 'Ethereum', 'Polygon', 'BSC'],
-      downloadUrl: 'https://wallet.optikcoin.com/download',
-      platforms: {
-        windows: 'OptikWallet-Setup-2.0.0.exe',
-        mac: 'OptikWallet-2.0.0.dmg',
-        linux: 'OptikWallet-2.0.0.AppImage',
-        android: 'OptikWallet-2.0.0.apk',
-        ios: 'Available on App Store'
-      }
-    };
-
-    // Create downloadable file
-    const blob = new Blob([JSON.stringify(walletData, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'OptikWallet-Installer.json';
-    a.click();
-    URL.revokeObjectURL(url);
-
-    // Show success message
-    alert('OPTIK Wallet installer downloaded! This contains the download links for all platforms.');
+    // Open the wallet download modal
+    window.dispatchEvent(new CustomEvent('open-wallet-download-modal'));
   };
 
   if (!connected) {
@@ -595,7 +554,7 @@ export default function OptikWallet() {
         </div>
       )}
 
-      {/* Other tab implementations would go here... */}
+      {/* Settings Tab */}
       {activeTab === 'settings' && (
         <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6">
           <h2 className="text-xl font-bold text-white mb-6">Wallet Settings</h2>
