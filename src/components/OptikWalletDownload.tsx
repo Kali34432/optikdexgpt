@@ -23,8 +23,8 @@ export default function OptikWalletDownload() {
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>OPTIK Wallet - ${platform}</title>
     <style>
         * {
@@ -695,7 +695,7 @@ export default function OptikWalletDownload() {
           className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-200 shadow-lg hover:shadow-blue-500/25 flex items-center space-x-2 mx-auto"
         >
           <Download className="w-5 h-5" />
-          <span>Download Universal Interface</span>
+          <span>Download OPTIK Wallet</span>
         </button>
       </div>
     </div>

@@ -556,7 +556,7 @@ export default function WalletDownloadModal({ isOpen, onClose }: WalletDownloadM
       <div className="bg-gray-800/95 backdrop-blur-md border border-gray-700/50 rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-700/50">
-          <h2 className="text-2xl font-bold text-white">OPTIK Wallet Download</h2>
+          <h2 className="text-2xl font-bold text-white">Download OPTIK Wallet</h2>
           <button
             onClick={onClose}
             className="p-2 bg-gray-700/50 hover:bg-gray-600/50 rounded-lg transition-all duration-200"
@@ -638,7 +638,7 @@ export default function WalletDownloadModal({ isOpen, onClose }: WalletDownloadM
                 className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2"
               >
                 <Download className="w-5 h-5" />
-                <span>Download Wallet Interface</span>
+                <span>Download OPTIK Wallet</span>
               </button>
               <button
                 onClick={copyDownloadLink}
