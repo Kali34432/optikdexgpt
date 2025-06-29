@@ -29,13 +29,13 @@ export default function Subscription() {
         'No priority support',
         'Limited chart features',
       ],
-      buttonText: subscription.subscriptionTier === 'free' ? 'Current Plan' : 'Downgrade',
-      buttonClass: subscription.subscriptionTier === 'free' 
+      buttonText: subscription?.subscriptionTier === 'free' ? 'Current Plan' : 'Downgrade',
+      buttonClass: subscription?.subscriptionTier === 'free' 
         ? 'bg-gray-600 text-gray-300 cursor-not-allowed' 
         : 'bg-gray-600/20 hover:bg-gray-600/30 text-gray-400',
       icon: Star,
       popular: false,
-      disabled: subscription.subscriptionTier === 'free'
+      disabled: subscription?.subscriptionTier === 'free'
     },
     {
       id: 'pro_creator',
@@ -45,7 +45,7 @@ export default function Subscription() {
       description: 'Access to all specialized GPTs',
       features: [
         'Unlimited AI assistance',
-        'All specialized GPT assistants',
+        'All 7 specialized GPT assistants',
         'Advanced trading analytics',
         'Anti-bot protection tools',
         'Smart contract templates',
@@ -55,13 +55,13 @@ export default function Subscription() {
         'Market alerts',
       ],
       limitations: [],
-      buttonText: subscription.subscriptionTier === 'pro_creator' ? 'Current Plan' : 'Subscribe Now',
-      buttonClass: subscription.subscriptionTier === 'pro_creator'
+      buttonText: subscription?.subscriptionTier === 'pro_creator' ? 'Current Plan' : 'Subscribe Now',
+      buttonClass: subscription?.subscriptionTier === 'pro_creator'
         ? 'bg-blue-600 text-white cursor-not-allowed'
         : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white',
       icon: Crown,
       popular: true,
-      disabled: subscription.subscriptionTier === 'pro_creator'
+      disabled: subscription?.subscriptionTier === 'pro_creator'
     },
     {
       id: 'ultimate_bundle',
@@ -84,13 +84,13 @@ export default function Subscription() {
         'Post-launch monitoring',
       ],
       limitations: [],
-      buttonText: subscription.subscriptionTier === 'ultimate_bundle' ? 'Current Plan' : 'Get Started',
-      buttonClass: subscription.subscriptionTier === 'ultimate_bundle'
+      buttonText: subscription?.subscriptionTier === 'ultimate_bundle' ? 'Current Plan' : 'Get Started',
+      buttonClass: subscription?.subscriptionTier === 'ultimate_bundle'
         ? 'bg-purple-600 text-white cursor-not-allowed'
         : 'bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white',
       icon: Zap,
       popular: false,
-      disabled: subscription.subscriptionTier === 'ultimate_bundle'
+      disabled: subscription?.subscriptionTier === 'ultimate_bundle'
     },
   ];
 
@@ -211,7 +211,7 @@ export default function Subscription() {
         </p>
         
         {/* Current Subscription Status */}
-        {subscription.isSubscribed && (
+        {subscription?.isSubscribed && (
           <div className="mt-6 inline-flex items-center space-x-2 bg-green-500/10 border border-green-500/20 rounded-full px-4 py-2">
             <Check className="w-4 h-4 text-green-400" />
             <span className="text-green-400 font-medium">
@@ -327,7 +327,7 @@ export default function Subscription() {
       </div>
 
       {/* Individual AI Tools */}
-      {subscription.subscriptionTier !== 'ultimate_bundle' && (
+      {subscription?.subscriptionTier !== 'ultimate_bundle' && (
         <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-8">
           <h2 className="text-2xl font-bold text-white mb-6">Individual AI Assistants</h2>
           <p className="text-gray-400 mb-6">

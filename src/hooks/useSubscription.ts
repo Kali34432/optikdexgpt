@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { supabase, UserProfile } from '../services/supabaseClient';
 
 export interface SubscriptionData {
   isSubscribed: boolean;
@@ -15,107 +14,17 @@ export const useSubscription = () => {
     subscriptionTier: 'free',
     subscriptionStatus: 'inactive'
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchSubscription = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        setSubscription({
-          isSubscribed: false,
-          subscriptionTier: 'free',
-          subscriptionStatus: 'inactive'
-        });
-        return;
-      }
-
-      // Get user profile with subscription info
-      const { data: profile, error: profileError } = await supabase
-        .from('user_profiles')
-        .select('subscription_tier, subscription_status')
-        .eq('id', user.id)
-        .single();
-
-      if (profileError) {
-        // If profile doesn't exist, user might be newly registered
-        if (profileError.code === 'PGRST116') {
-          setSubscription({
-            isSubscribed: false,
-            subscriptionTier: 'free',
-            subscriptionStatus: 'inactive'
-          });
-          return;
-        }
-        throw profileError;
-      }
-
-      // Get detailed subscription info
-      const { data: subscriptionDetails, error: subError } = await supabase
-        .from('subscriptions')
-        .select('current_period_end, cancel_at_period_end, status')
-        .eq('user_id', user.id)
-        .eq('status', 'active')
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single();
-
-      setSubscription({
-        isSubscribed: profile?.subscription_status === 'active',
-        subscriptionTier: profile?.subscription_tier || 'free',
-        subscriptionStatus: profile?.subscription_status || 'inactive',
-        currentPeriodEnd: subscriptionDetails?.current_period_end,
-        cancelAtPeriodEnd: subscriptionDetails?.cancel_at_period_end
-      });
-    } catch (err: any) {
-      console.error('Error fetching subscription:', err);
-      setError(err.message);
-      // Set default values on error
-      setSubscription({
-        isSubscribed: false,
-        subscriptionTier: 'free',
-        subscriptionStatus: 'inactive'
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchSubscription();
-
-    // Listen for auth changes
-    const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
-          fetchSubscription();
-        }
-      }
-    );
-
-    // Listen for subscription changes
-    const subscriptionChannel = supabase
-      .channel('subscription-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'user_profiles'
-        },
-        () => {
-          fetchSubscription();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      authSubscription.unsubscribe();
-      subscriptionChannel.unsubscribe();
-    };
+    // Mock subscription data for demo
+    setSubscription({
+      isSubscribed: false,
+      subscriptionTier: 'free',
+      subscriptionStatus: 'inactive'
+    });
+    setLoading(false);
   }, []);
 
   const hasAccess = (feature: string): boolean => {
@@ -159,6 +68,6 @@ export const useSubscription = () => {
     hasAccess,
     canUpgrade,
     getUpgradeOptions,
-    refetch: fetchSubscription
+    refetch: () => {}
   };
 };
