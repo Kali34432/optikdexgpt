@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, Send, X, Minimize2, Maximize2, Bot, User, Sparkles, RefreshCw, Trash2, Copy, Download } from 'lucide-react';
+import { MessageSquare, Send, X, Minimize2, Maximize2, Bot, User, Sparkles, RefreshCw, Trash2, Copy, Download, Lock, CreditCard, CheckCircle, AlertTriangle } from 'lucide-react';
 import { optikAI, OPTIK_BOTS, ChatMessage } from '../services/openai';
 
 export default function OptikGPTSidebar() {
@@ -12,6 +12,9 @@ export default function OptikGPTSidebar() {
   const [conversationId] = useState(`sidebar-chat-${Date.now()}`);
   const [totalCost, setTotalCost] = useState(0);
   const [totalTokens, setTotalTokens] = useState(0);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState<'pending' | 'processing' | 'success' | 'error'>('pending');
+  const [unlockedBots, setUnlockedBots] = useState<string[]>(['general']);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -33,6 +36,21 @@ export default function OptikGPTSidebar() {
     };
     setMessages([welcomeMessage]);
   }, [selectedBot]);
+
+  // Load unlocked bots from localStorage
+  useEffect(() => {
+    const savedUnlockedBots = localStorage.getItem('unlockedBots');
+    if (savedUnlockedBots) {
+      try {
+        const parsedBots = JSON.parse(savedUnlockedBots);
+        if (Array.isArray(parsedBots)) {
+          setUnlockedBots(parsedBots);
+        }
+      } catch (error) {
+        console.error('Error parsing unlocked bots:', error);
+      }
+    }
+  }, []);
 
   const sendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return;
@@ -174,6 +192,47 @@ export default function OptikGPTSidebar() {
     ]
   };
 
+  const isBotLocked = (botType: string) => {
+    return botType !== 'general' && !unlockedBots.includes(botType);
+  };
+
+  const handleBotSelection = (botType: string) => {
+    if (isBotLocked(botType)) {
+      setShowPaymentModal(true);
+    } else {
+      setSelectedBot(botType);
+    }
+  };
+
+  const handlePayment = () => {
+    setPaymentStatus('processing');
+    
+    // Simulate payment processing
+    setTimeout(() => {
+      setPaymentStatus('success');
+      
+      // Add the bot to unlocked bots
+      const newUnlockedBots = [...unlockedBots, selectedBot];
+      setUnlockedBots(newUnlockedBots);
+      
+      // Save to localStorage
+      localStorage.setItem('unlockedBots', JSON.stringify(newUnlockedBots));
+      
+      // Close modal after a delay
+      setTimeout(() => {
+        setShowPaymentModal(false);
+        setPaymentStatus('pending');
+      }, 2000);
+    }, 2000);
+  };
+
+  const handlePaymentError = () => {
+    setPaymentStatus('error');
+    setTimeout(() => {
+      setPaymentStatus('pending');
+    }, 3000);
+  };
+
   if (!isOpen) {
     return (
       <button
@@ -231,17 +290,39 @@ export default function OptikGPTSidebar() {
           <>
             {/* Bot Selector */}
             <div className="p-3 border-b border-cyan-700/30">
-              <select
-                value={selectedBot}
-                onChange={(e) => setSelectedBot(e.target.value)}
-                className="w-full bg-gray-800/50 border border-gray-600/50 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-cyan-500/50"
-              >
-                {Object.entries(OPTIK_BOTS).map(([key, bot]) => (
-                  <option key={key} value={key}>
-                    {getBotIcon(key)} {bot.name}
-                  </option>
-                ))}
-              </select>
+              <div className="grid grid-cols-2 gap-2">
+                {Object.entries(OPTIK_BOTS).map(([key, bot]) => {
+                  const isLocked = isBotLocked(key);
+                  const isSelected = selectedBot === key;
+                  
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => handleBotSelection(key)}
+                      className={`p-2 rounded-lg text-left transition-all duration-200 relative ${
+                        isSelected
+                          ? `${getBotColor(key)} border border-current/30`
+                          : 'bg-gray-800/50 border border-gray-600/50 hover:border-gray-500/50'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <span className="text-lg">{getBotIcon(key)}</span>
+                        <div>
+                          <p className={`text-xs font-medium ${isSelected ? '' : 'text-gray-300'}`}>
+                            {bot.name.split(' ').slice(-1)[0]}
+                          </p>
+                          {isLocked && (
+                            <div className="flex items-center space-x-1">
+                              <Lock className="w-3 h-3 text-amber-400" />
+                              <span className="text-amber-400 text-xs">$19.99</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Messages */}
@@ -406,6 +487,119 @@ export default function OptikGPTSidebar() {
                 Add OpenAI API key to enable AI features
               </p>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Payment Modal */}
+      {showPaymentModal && (
+        <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+          <div className="bg-gray-800/95 backdrop-blur-md border border-gray-700/50 rounded-xl max-w-md w-full p-6">
+            <div className="text-center mb-6">
+              <div className="bg-purple-600/20 p-4 rounded-full inline-flex mb-4">
+                <Lock className="w-8 h-8 text-purple-400" />
+              </div>
+              <h2 className="text-2xl font-bold text-white mb-2">Unlock {OPTIK_BOTS[selectedBot].name}</h2>
+              <p className="text-gray-400">Get access to advanced AI capabilities for your crypto journey</p>
+            </div>
+
+            {paymentStatus === 'pending' && (
+              <>
+                <div className="bg-gray-700/30 rounded-xl p-6 border border-gray-600/30 mb-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <div>
+                      <p className="text-white font-medium">{OPTIK_BOTS[selectedBot].name}</p>
+                      <p className="text-gray-400 text-sm">{OPTIK_BOTS[selectedBot].role}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-2xl font-bold text-purple-400">$19.99</p>
+                      <p className="text-purple-300/80 text-xs">one-time purchase</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-center text-sm">
+                      <CheckCircle className="w-4 h-4 text-green-400 mr-3 flex-shrink-0" />
+                      <span className="text-gray-300">Unlimited access to {OPTIK_BOTS[selectedBot].name}</span>
+                    </div>
+                    <div className="flex items-center text-sm">
+                      <CheckCircle className="w-4 h-4 text-green-400 mr-3 flex-shrink-0" />
+                      <span className="text-gray-300">Advanced {selectedBot} insights</span>
+                    </div>
+                    <div className="flex items-center text-sm">
+                      <CheckCircle className="w-4 h-4 text-green-400 mr-3 flex-shrink-0" />
+                      <span className="text-gray-300">Powered by GPT-4 technology</span>
+                    </div>
+                    <div className="flex items-center text-sm">
+                      <CheckCircle className="w-4 h-4 text-green-400 mr-3 flex-shrink-0" />
+                      <span className="text-gray-300">Lifetime access</span>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={handlePayment}
+                    className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2"
+                  >
+                    <CreditCard className="w-5 h-5" />
+                    <span>Purchase for $19.99</span>
+                  </button>
+                </div>
+
+                <div className="flex justify-between">
+                  <button
+                    onClick={() => setShowPaymentModal(false)}
+                    className="text-gray-400 hover:text-white text-sm"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => handlePaymentError()}
+                    className="text-gray-400 hover:text-white text-sm"
+                  >
+                    Restore Purchases
+                  </button>
+                </div>
+              </>
+            )}
+
+            {paymentStatus === 'processing' && (
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500 mx-auto mb-6"></div>
+                <h3 className="text-xl font-bold text-white mb-2">Processing Payment</h3>
+                <p className="text-gray-400">Please wait while we process your payment...</p>
+              </div>
+            )}
+
+            {paymentStatus === 'success' && (
+              <div className="text-center py-8">
+                <div className="bg-green-600/20 p-6 rounded-full inline-flex mb-6">
+                  <CheckCircle className="w-12 h-12 text-green-400" />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">Payment Successful!</h3>
+                <p className="text-gray-400 mb-4">
+                  You now have access to {OPTIK_BOTS[selectedBot].name}!
+                </p>
+                <p className="text-green-400 text-sm">
+                  Unlocking your new AI assistant...
+                </p>
+              </div>
+            )}
+
+            {paymentStatus === 'error' && (
+              <div className="text-center py-8">
+                <div className="bg-red-600/20 p-6 rounded-full inline-flex mb-6">
+                  <AlertTriangle className="w-12 h-12 text-red-400" />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">Payment Failed</h3>
+                <p className="text-gray-400 mb-6">There was an issue processing your payment. Please try again.</p>
+                <button
+                  onClick={() => setPaymentStatus('pending')}
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200"
+                >
+                  Try Again
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
