@@ -416,12 +416,6 @@ export default function Login({ onLogin }: LoginProps) {
               </button>
             </div>
 
-            <div className="mt-6 p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg">
-              <p className="text-amber-400 text-sm text-center">
-                <strong>Note:</strong> Check your spam folder if you don't see the email within a few minutes.
-              </p>
-            </div>
-
             {/* Rate Limit Information */}
             {resendCooldown > 0 && (
               <div className="mt-4 p-4 bg-orange-500/10 border border-orange-500/20 rounded-lg">
@@ -430,6 +424,12 @@ export default function Login({ onLogin }: LoginProps) {
                 </p>
               </div>
             )}
+
+            <div className="mt-6 p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+              <p className="text-amber-400 text-sm text-center">
+                <strong>Note:</strong> Check your spam folder if you don't see the email within a few minutes.
+              </p>
+            </div>
           </div>
         </div>
 
