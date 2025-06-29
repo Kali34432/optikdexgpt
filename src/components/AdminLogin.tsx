@@ -16,9 +16,14 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Default admin credentials
   const ADMIN_EMAIL = 'admin@optikcoin.com';
   const ADMIN_PASSWORD = 'OptikAdmin2025!';
+
+  const generate2FACode = (): string => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  };
+
+  const [generatedCode, setGeneratedCode] = useState('');
 
   const handleCredentialsSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,13 +31,15 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
     setError('');
 
     try {
-      // Check credentials
       if (formData.email === ADMIN_EMAIL && formData.password === ADMIN_PASSWORD) {
+        const code = generate2FACode();
+        setGeneratedCode(code);
+        console.log('2FA Code:', code); // This would be sent via email or text in production
         setStep('2fa');
       } else {
         setError('Invalid admin credentials. Please check your email and password.');
       }
-    } catch (err: any) {
+    } catch {
       setError('Authentication failed. Please try again.');
     } finally {
       setIsLoading(false);
@@ -45,163 +52,65 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
     setError('');
 
     try {
-      // For demo purposes, accept any 6-digit code except 000000
-      if (formData.twoFactorCode.length === 6 && formData.twoFactorCode !== '000000') {
-        // Store admin session
+      if (formData.twoFactorCode === generatedCode) {
         localStorage.setItem('adminAuthenticated', 'true');
         localStorage.setItem('adminLoginTime', Date.now().toString());
         onLogin(true);
       } else {
         setError('Invalid 2FA code. Please try again.');
       }
-    } catch (err: any) {
+    } catch {
       setError('2FA verification failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  if (step === '2fa') {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-900 flex items-center justify-center px-4">
-        <div className="max-w-md w-full">
-          <div className="bg-gray-800/50 backdrop-blur-sm border border-red-700/30 rounded-xl p-8">
-            <div className="text-center mb-8">
-              <div className="bg-red-600/20 p-4 rounded-full inline-flex mb-4">
-                <Smartphone className="w-8 h-8 text-red-400" />
-              </div>
-              <h2 className="text-2xl font-bold text-white mb-2">Two-Factor Authentication</h2>
-              <p className="text-gray-400">Enter any 6-digit code (except 000000) for demo</p>
-            </div>
-
-            {error && (
-              <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center space-x-3">
-                <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0" />
-                <p className="text-red-400 text-sm">{error}</p>
-              </div>
-            )}
-
-            <form onSubmit={handle2FASubmit} className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Authentication Code
-                </label>
-                <input
-                  type="text"
-                  maxLength={6}
-                  value={formData.twoFactorCode}
-                  onChange={(e) => setFormData({...formData, twoFactorCode: e.target.value.replace(/\D/g, '')})}
-                  className="w-full bg-gray-700/50 border border-red-600/30 rounded-lg px-4 py-3 text-white text-center text-2xl font-mono tracking-widest placeholder-gray-400 focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/20"
-                  placeholder="123456"
-                  required
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={isLoading || formData.twoFactorCode.length !== 6}
-                className="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition-all duration-200 shadow-lg hover:shadow-red-500/25"
-              >
-                {isLoading ? 'Verifying...' : 'Verify & Login'}
-              </button>
-
-              <div className="text-center">
-                <button
-                  type="button"
-                  onClick={() => setStep('credentials')}
-                  className="text-gray-400 hover:text-white text-sm transition-colors duration-200"
-                >
-                  Back to login
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-
-        {/* Background Effects */}
-        <div className="fixed inset-0 -z-10 overflow-hidden">
-          <div className="absolute -top-40 -right-32 w-80 h-80 bg-red-500/10 rounded-full blur-3xl"></div>
-          <div className="absolute -bottom-40 -left-32 w-80 h-80 bg-orange-500/10 rounded-full blur-3xl"></div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-900 flex items-center justify-center px-4">
       <div className="max-w-md w-full">
-        <div className="text-center mb-8">
-          <div className="bg-red-600/20 p-4 rounded-full inline-flex mb-4">
-            <Shield className="w-12 h-12 text-red-400" />
-          </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Admin Portal</h1>
-          <p className="text-gray-400">OptikDexGPT Platform Administration</p>
-        </div>
-
-        <div className="bg-gray-800/50 backdrop-blur-sm border border-red-700/30 rounded-xl p-8">
-          <div className="mb-6">
-            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
-              <div className="flex items-center space-x-3">
-                <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0" />
-                <div>
-                  <p className="text-red-400 font-medium text-sm">Restricted Access</p>
-                  <p className="text-red-300/80 text-xs mt-1">
-                    This area is restricted to authorized administrators only.
-                  </p>
-                </div>
+        {step === 'credentials' && (
+          <form onSubmit={handleCredentialsSubmit} className="bg-gray-800/50 border border-red-700/30 rounded-xl p-8 space-y-6">
+            <div className="text-center">
+              <div className="bg-red-600/20 p-4 rounded-full inline-flex mb-4">
+                <Shield className="w-10 h-10 text-red-400" />
               </div>
+              <h2 className="text-2xl font-bold text-white">Admin Login</h2>
+              <p className="text-gray-400">Enter credentials to continue</p>
             </div>
-          </div>
 
-          {/* Demo Credentials Display */}
-          <div className="mb-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-            <p className="text-blue-400 font-medium text-sm mb-2">Demo Admin Credentials:</p>
-            <div className="space-y-1 text-xs font-mono">
-              <p className="text-blue-300">Email: admin@optikcoin.com</p>
-              <p className="text-blue-300">Password: OptikAdmin2025!</p>
-              <p className="text-blue-300">2FA: Any 6-digit code (except 000000)</p>
-            </div>
-          </div>
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/20 p-3 rounded-lg text-red-400 text-sm flex items-center space-x-2">
+                <AlertTriangle className="w-4 h-4" />
+                <span>{error}</span>
+              </div>
+            )}
 
-          {error && (
-            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center space-x-3">
-              <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0" />
-              <p className="text-red-400 text-sm">{error}</p>
-            </div>
-          )}
-
-          <form onSubmit={handleCredentialsSubmit} className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Admin Email
-              </label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
               <input
                 type="email"
                 required
                 value={formData.email}
-                onChange={(e) => setFormData({...formData, email: e.target.value})}
-                className="w-full bg-gray-700/50 border border-red-600/30 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/20"
-                placeholder="admin@optikcoin.com"
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                className="w-full bg-gray-700/50 border border-red-600/30 rounded-lg px-4 py-3 text-white"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Password
-              </label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Password</label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
                   required
                   value={formData.password}
-                  onChange={(e) => setFormData({...formData, password: e.target.value})}
-                  className="w-full bg-gray-700/50 border border-red-600/30 rounded-lg px-4 py-3 pr-12 text-white placeholder-gray-400 focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/20"
-                  placeholder="Enter admin password"
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  className="w-full bg-gray-700/50 border border-red-600/30 rounded-lg px-4 py-3 pr-10 text-white"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -211,33 +120,60 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition-all duration-200 shadow-lg hover:shadow-red-500/25"
+              className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-semibold"
             >
-              {isLoading ? 'Authenticating...' : 'Login to Admin Panel'}
+              {isLoading ? 'Logging in...' : 'Continue'}
             </button>
           </form>
+        )}
 
-          <div className="mt-6 pt-6 border-t border-red-700/30">
-            <div className="bg-gray-700/30 rounded-lg p-4">
-              <div className="flex items-center space-x-3">
-                <Shield className="w-5 h-5 text-red-400 flex-shrink-0" />
-                <div>
-                  <p className="text-red-400 font-medium text-sm">Enhanced Security</p>
-                  <p className="text-red-300/80 text-xs mt-1">
-                    2FA authentication required for all admin accounts.
-                  </p>
-                </div>
+        {step === '2fa' && (
+          <form onSubmit={handle2FASubmit} className="bg-gray-800/50 border border-red-700/30 rounded-xl p-8 space-y-6">
+            <div className="text-center">
+              <div className="bg-red-600/20 p-4 rounded-full inline-flex mb-4">
+                <Smartphone className="w-10 h-10 text-red-400" />
               </div>
+              <h2 className="text-2xl font-bold text-white">Two-Factor Code</h2>
+              <p className="text-gray-400">Enter the 6-digit code: <span className="text-white font-mono">{generatedCode}</span></p>
             </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Background Effects */}
-      <div className="fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute -top-40 -right-32 w-80 h-80 bg-red-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-32 w-80 h-80 bg-orange-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-slate-500/5 rounded-full blur-3xl"></div>
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/20 p-3 rounded-lg text-red-400 text-sm flex items-center space-x-2">
+                <AlertTriangle className="w-4 h-4" />
+                <span>{error}</span>
+              </div>
+            )}
+
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">2FA Code</label>
+              <input
+                type="text"
+                maxLength={6}
+                value={formData.twoFactorCode}
+                onChange={(e) => setFormData({ ...formData, twoFactorCode: e.target.value.replace(/\D/g, '') })}
+                className="w-full bg-gray-700/50 border border-red-600/30 rounded-lg px-4 py-3 text-white text-center text-xl font-mono tracking-widest"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoading || formData.twoFactorCode.length !== 6}
+              className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-semibold disabled:opacity-50"
+            >
+              {isLoading ? 'Verifying...' : 'Login'}
+            </button>
+
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={() => setStep('credentials')}
+                className="text-gray-400 hover:text-white text-sm"
+              >
+                Back to login
+              </button>
+            </div>
+          </form>
+        )}
       </div>
     </div>
   );
