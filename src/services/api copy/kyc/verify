@@ -1,0 +1,15 @@
+// Next.js or Express-style handler
+
+app.post('/api/kyc/verify', async (req, res) => {
+  const { fullName, email, country, idNumber } = req.body;
+
+  // Validate fields
+  if (!fullName || !email || !country || !idNumber) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  // TODO: Save to your DB (MongoDB, Supabase, MySQL, etc.)
+  // Example: await db.kyc.insert({ fullName, email, country, idNumber, createdAt: Date.now() })
+
+  return res.status(200).json({ message: 'KYC verified' });
+});
