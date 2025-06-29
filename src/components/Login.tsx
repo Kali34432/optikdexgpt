@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Eye, EyeOff, Shield, Mail, Lock, User, CheckCircle, AlertTriangle, Loader, ArrowLeft } from 'lucide-react';
+import { Eye, EyeOff, Shield, Mail, Lock, User, CheckCircle, AlertTriangle, Loader, ArrowLeft, Clock } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
 import logo from '../assets/logo.png';
 
@@ -36,6 +36,7 @@ export default function Login({ onLogin }: LoginProps) {
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [showEmailVerification, setShowEmailVerification] = useState(false);
   const [verificationEmail, setVerificationEmail] = useState('');
+  const [resendCooldown, setResendCooldown] = useState(0);
   const [formData, setFormData] = useState<FormData>({
     email: '',
     password: '',
@@ -65,6 +66,17 @@ export default function Login({ onLogin }: LoginProps) {
     return () => subscription.unsubscribe();
   }, [onLogin]);
 
+  // Cooldown timer for resend verification
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (resendCooldown > 0) {
+      interval = setInterval(() => {
+        setResendCooldown(prev => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [resendCooldown]);
+
   // Reset form when switching between login/signup
   useEffect(() => {
     setFormData({
@@ -80,6 +92,7 @@ export default function Login({ onLogin }: LoginProps) {
     setValidationErrors({});
     setPasswordStrength(0);
     setShowEmailVerification(false);
+    setResendCooldown(0);
   }, [isLogin]);
 
   // Password strength calculation
@@ -158,6 +171,42 @@ export default function Login({ onLogin }: LoginProps) {
     return Object.keys(errors).length === 0;
   };
 
+  const parseSupabaseError = (error: any): string => {
+    const message = error.message || '';
+    
+    // Handle rate limiting errors
+    if (message.includes('over_email_send_rate_limit')) {
+      const match = message.match(/after (\d+) seconds/);
+      const seconds = match ? parseInt(match[1]) : 60;
+      setResendCooldown(seconds);
+      return `Too many email requests. Please wait ${seconds} seconds before trying again.`;
+    }
+    
+    // Handle authentication errors
+    if (message.includes('Invalid login credentials')) {
+      return 'Invalid email or password. Please check your credentials and try again.';
+    }
+    
+    if (message.includes('Email not confirmed')) {
+      return 'Please check your email and click the verification link before signing in.';
+    }
+    
+    if (message.includes('User already registered')) {
+      return 'An account with this email already exists. Please sign in instead.';
+    }
+    
+    if (message.includes('Signup is disabled')) {
+      return 'Account registration is currently disabled. Please contact support.';
+    }
+    
+    if (message.includes('Email rate limit exceeded')) {
+      return 'Too many email attempts. Please wait a few minutes before trying again.';
+    }
+    
+    // Default error message
+    return message || 'An unexpected error occurred. Please try again.';
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -178,14 +227,12 @@ export default function Login({ onLogin }: LoginProps) {
         });
 
         if (error) {
+          const errorMessage = parseSupabaseError(error);
+          setError(errorMessage);
+          
           if (error.message.includes('Email not confirmed')) {
-            setError('Please check your email and click the verification link before signing in.');
             setShowEmailVerification(true);
             setVerificationEmail(formData.email);
-          } else if (error.message.includes('Invalid login credentials')) {
-            setError('Invalid email or password. Please check your credentials and try again.');
-          } else {
-            setError(error.message);
           }
           return;
         }
@@ -213,11 +260,8 @@ export default function Login({ onLogin }: LoginProps) {
         });
 
         if (error) {
-          if (error.message.includes('User already registered')) {
-            setError('An account with this email already exists. Please sign in instead.');
-          } else {
-            setError(error.message);
-          }
+          const errorMessage = parseSupabaseError(error);
+          setError(errorMessage);
           return;
         }
 
@@ -228,14 +272,15 @@ export default function Login({ onLogin }: LoginProps) {
         }
       }
     } catch (err: any) {
-      setError(err.message || 'An unexpected error occurred. Please try again.');
+      const errorMessage = parseSupabaseError(err);
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleResendVerification = async () => {
-    if (!verificationEmail) return;
+    if (!verificationEmail || resendCooldown > 0) return;
 
     setIsLoading(true);
     setError('');
@@ -250,12 +295,15 @@ export default function Login({ onLogin }: LoginProps) {
       });
 
       if (error) {
-        setError(error.message);
+        const errorMessage = parseSupabaseError(error);
+        setError(errorMessage);
       } else {
         setSuccess('Verification email sent! Please check your inbox.');
+        setResendCooldown(60); // Set a default cooldown
       }
     } catch (err: any) {
-      setError(err.message || 'Failed to resend verification email.');
+      const errorMessage = parseSupabaseError(err);
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -312,13 +360,18 @@ export default function Login({ onLogin }: LoginProps) {
 
               <button
                 onClick={handleResendVerification}
-                disabled={isLoading}
+                disabled={isLoading || resendCooldown > 0}
                 className="w-full bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-400 font-semibold py-3 rounded-lg transition-all duration-200 border border-cyan-500/30 disabled:opacity-50 flex items-center justify-center space-x-2"
               >
                 {isLoading ? (
                   <>
                     <Loader className="w-5 h-5 animate-spin" />
                     <span>Sending...</span>
+                  </>
+                ) : resendCooldown > 0 ? (
+                  <>
+                    <Clock className="w-5 h-5" />
+                    <span>Resend in {resendCooldown}s</span>
                   </>
                 ) : (
                   <>
@@ -334,6 +387,7 @@ export default function Login({ onLogin }: LoginProps) {
                   setVerificationEmail('');
                   setError('');
                   setSuccess('');
+                  setResendCooldown(0);
                 }}
                 className="w-full bg-gray-600/20 hover:bg-gray-600/30 text-gray-400 font-semibold py-3 rounded-lg transition-all duration-200 border border-gray-500/30 flex items-center justify-center space-x-2"
               >

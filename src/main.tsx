@@ -5,7 +5,7 @@ import './index.css';
 import { WalletProviderWrapper } from './components/WalletProviderWrapper';
 
 // Register service worker for PWA support (skip in StackBlitz environment)
-if ('serviceWorker' in navigator && !window.location.hostname.includes('stackblitz')) {
+if ('serviceWorker' in navigator && !window.location.hostname.includes('stackblitz') && !window.location.hostname.includes('webcontainer')) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/wallet-sw-register.js')
       .then(registration => {
@@ -15,8 +15,8 @@ if ('serviceWorker' in navigator && !window.location.hostname.includes('stackbli
         console.error('OPTIK Wallet PWA registration failed:', error);
       });
   });
-} else if (window.location.hostname.includes('stackblitz')) {
-  console.log('Service Worker registration skipped in StackBlitz environment');
+} else {
+  console.log('Service Worker registration skipped in development environment');
 }
 
 createRoot(document.getElementById('root')!).render(
