@@ -127,50 +127,6 @@ export default function Login({ onLogin }: LoginProps) {
     return 'Strong';
   };
 
-  const validateForm = (): boolean => {
-    const errors: ValidationErrors = {};
-
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!formData.email) {
-      errors.email = 'Email is required';
-    } else if (!emailRegex.test(formData.email)) {
-      errors.email = 'Please enter a valid email address';
-    }
-
-    // Password validation
-    if (!formData.password) {
-      errors.password = 'Password is required';
-    } else if (!isLogin) {
-      if (formData.password.length < 8) {
-        errors.password = 'Password must be at least 8 characters long';
-      } else if (passwordStrength < 60) {
-        errors.password = 'Password is too weak. Include uppercase, lowercase, numbers, and symbols';
-      }
-    }
-
-    // Confirm password validation (signup only)
-    if (!isLogin) {
-      if (!formData.firstName.trim()) {
-        errors.firstName = 'First name is required';
-      }
-      if (!formData.lastName.trim()) {
-        errors.lastName = 'Last name is required';
-      }
-      if (!formData.confirmPassword) {
-        errors.confirmPassword = 'Please confirm your password';
-      } else if (formData.password !== formData.confirmPassword) {
-        errors.confirmPassword = 'Passwords do not match';
-      }
-      if (!formData.acceptTerms) {
-        errors.acceptTerms = 'You must accept the terms and conditions';
-      }
-    }
-
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
   const parseSupabaseError = (error: any): string => {
     const message = error.message || '';
     
@@ -224,6 +180,50 @@ export default function Login({ onLogin }: LoginProps) {
     
     // Default error message
     return message || 'An unexpected error occurred. Please try again.';
+  };
+
+  const validateForm = (): boolean => {
+    const errors: ValidationErrors = {};
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.email) {
+      errors.email = 'Email is required';
+    } else if (!emailRegex.test(formData.email)) {
+      errors.email = 'Please enter a valid email address';
+    }
+
+    // Password validation
+    if (!formData.password) {
+      errors.password = 'Password is required';
+    } else if (!isLogin) {
+      if (formData.password.length < 8) {
+        errors.password = 'Password must be at least 8 characters long';
+      } else if (passwordStrength < 60) {
+        errors.password = 'Password is too weak. Include uppercase, lowercase, numbers, and symbols';
+      }
+    }
+
+    // Confirm password validation (signup only)
+    if (!isLogin) {
+      if (!formData.firstName.trim()) {
+        errors.firstName = 'First name is required';
+      }
+      if (!formData.lastName.trim()) {
+        errors.lastName = 'Last name is required';
+      }
+      if (!formData.confirmPassword) {
+        errors.confirmPassword = 'Please confirm your password';
+      } else if (formData.password !== formData.confirmPassword) {
+        errors.confirmPassword = 'Passwords do not match';
+      }
+      if (!formData.acceptTerms) {
+        errors.acceptTerms = 'You must accept the terms and conditions';
+      }
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

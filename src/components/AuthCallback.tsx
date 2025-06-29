@@ -11,26 +11,87 @@ export default function AuthCallback() {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        const { data, error } = await supabase.auth.getSession();
-        
-        if (error) {
-          console.error('Auth callback error:', error);
-          setStatus('error');
-          setMessage(error.message);
-          return;
-        }
+        // Get the URL hash parameters
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const accessToken = hashParams.get('access_token');
+        const refreshToken = hashParams.get('refresh_token');
+        const type = hashParams.get('type');
 
-        if (data.session?.user) {
-          setStatus('success');
-          setMessage('Email verified successfully! Redirecting to dashboard...');
-          
-          // Redirect to main app after 2 seconds
-          setTimeout(() => {
-            navigate('/', { replace: true });
-          }, 2000);
+        if (type === 'signup' || type === 'email_confirmation') {
+          // Handle email confirmation
+          if (accessToken && refreshToken) {
+            // Set the session with the tokens
+            const { data, error } = await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken
+            });
+
+            if (error) {
+              console.error('Session error:', error);
+              setStatus('error');
+              setMessage('Failed to verify email. Please try again.');
+              return;
+            }
+
+            if (data.user) {
+              setStatus('success');
+              setMessage('Email verified successfully! Redirecting to dashboard...');
+              
+              // Redirect to main app after 2 seconds
+              setTimeout(() => {
+                navigate('/', { replace: true });
+              }, 2000);
+            } else {
+              setStatus('error');
+              setMessage('No user found. Please try signing in again.');
+            }
+          } else {
+            // Try to get session from URL parameters (fallback)
+            const { data, error } = await supabase.auth.getSession();
+            
+            if (error) {
+              console.error('Auth callback error:', error);
+              setStatus('error');
+              setMessage(error.message);
+              return;
+            }
+
+            if (data.session?.user) {
+              setStatus('success');
+              setMessage('Email verified successfully! Redirecting to dashboard...');
+              
+              // Redirect to main app after 2 seconds
+              setTimeout(() => {
+                navigate('/', { replace: true });
+              }, 2000);
+            } else {
+              setStatus('error');
+              setMessage('No session found. Please try signing in again.');
+            }
+          }
         } else {
-          setStatus('error');
-          setMessage('No session found. Please try signing in again.');
+          // Handle other auth types or direct session check
+          const { data, error } = await supabase.auth.getSession();
+          
+          if (error) {
+            console.error('Auth callback error:', error);
+            setStatus('error');
+            setMessage(error.message);
+            return;
+          }
+
+          if (data.session?.user) {
+            setStatus('success');
+            setMessage('Authentication successful! Redirecting to dashboard...');
+            
+            // Redirect to main app after 2 seconds
+            setTimeout(() => {
+              navigate('/', { replace: true });
+            }, 2000);
+          } else {
+            setStatus('error');
+            setMessage('No session found. Please try signing in again.');
+          }
         }
       } catch (err: any) {
         console.error('Unexpected error:', err);

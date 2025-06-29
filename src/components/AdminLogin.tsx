@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Shield, Eye, EyeOff, Smartphone, AlertTriangle } from 'lucide-react';
+import { Shield, Eye, EyeOff, Smartphone, AlertTriangle, CheckCircle, Loader } from 'lucide-react';
 import { Keypair } from '@solana/web3.js';
 
 interface AdminLoginProps {
@@ -32,6 +32,7 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const ADMIN_EMAIL = 'admin@optikcoin.com';
   const ADMIN_PASSWORD = 'OptikAdmin2025!';
@@ -42,12 +43,18 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
     e.preventDefault();
     setIsLoading(true);
     setError('');
+    setSuccess('');
+    
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
     if (formData.email === ADMIN_EMAIL && formData.password === ADMIN_PASSWORD) {
       const code = generate2FACode();
       setGeneratedCode(code);
+      setSuccess(`2FA Code generated: ${code}`);
       setStep('2fa');
     } else {
-      setError('Invalid admin credentials.');
+      setError('Invalid admin credentials. Please check your email and password.');
     }
     setIsLoading(false);
   };
@@ -56,10 +63,16 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
     e.preventDefault();
     setIsLoading(true);
     setError('');
+    setSuccess('');
+    
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
     if (formData.twoFactorCode === generatedCode) {
+      setSuccess('2FA verification successful! Please complete KYC verification.');
       setStep('kyc');
     } else {
-      setError('Invalid 2FA code.');
+      setError('Invalid 2FA code. Please enter the correct code.');
     }
     setIsLoading(false);
   };
@@ -68,35 +81,47 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
     e.preventDefault();
     setIsLoading(true);
     setError('');
+    setSuccess('');
 
     try {
-      const response = await fetch('/api/kyc/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fullName: formData.fullName,
-          country: formData.country,
-          idNumber: formData.idNumber,
-          email: formData.email
-        })
-      });
+      // Simulate KYC verification
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.message || 'KYC verification failed.');
-
-      const keypair = Keypair.generate();
-      const secretKey = Array.from(keypair.secretKey);
-      const publicKey = keypair.publicKey.toBase58();
-      downloadWalletKeypair(secretKey);
-      localStorage.setItem('adminAuthenticated', 'true');
-      localStorage.setItem('adminLoginTime', Date.now().toString());
-      localStorage.setItem('adminPublicKey', publicKey);
-      onLogin(true, publicKey);
+      // Mock KYC verification - in real app this would call an API
+      if (formData.fullName && formData.country && formData.idNumber) {
+        // Generate wallet keypair
+        const keypair = Keypair.generate();
+        const secretKey = Array.from(keypair.secretKey);
+        const publicKey = keypair.publicKey.toBase58();
+        
+        // Download wallet file
+        downloadWalletKeypair(secretKey);
+        
+        // Store admin session
+        localStorage.setItem('adminAuthenticated', 'true');
+        localStorage.setItem('adminLoginTime', Date.now().toString());
+        localStorage.setItem('adminPublicKey', publicKey);
+        
+        setSuccess('KYC verification successful! Wallet downloaded. Logging in...');
+        
+        // Complete login after short delay
+        setTimeout(() => {
+          onLogin(true, publicKey);
+        }, 2000);
+      } else {
+        throw new Error('Please fill in all required KYC fields.');
+      }
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || 'KYC verification failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    // Clear errors when user starts typing
+    if (error) setError('');
   };
 
   return (
@@ -107,14 +132,77 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
             <div className="text-center">
               <Shield className="w-10 h-10 text-red-400 mb-4 mx-auto bg-red-600/20 p-2 rounded-full" />
               <h2 className="text-2xl font-bold text-white">Admin Login</h2>
+              <p className="text-gray-400 text-sm mt-2">Secure access to OptikCoin administration</p>
             </div>
-            {error && <p className="text-red-400 text-sm">{error}</p>}
-            <input type="email" placeholder="Email" className="w-full bg-gray-700/50 border border-red-600/30 px-4 py-3 rounded-lg text-white" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} required />
+            
+            {error && (
+              <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center space-x-3">
+                <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0" />
+                <p className="text-red-400 text-sm">{error}</p>
+              </div>
+            )}
+            
+            {success && (
+              <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg flex items-center space-x-3">
+                <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" />
+                <p className="text-green-400 text-sm">{success}</p>
+              </div>
+            )}
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Admin Email</label>
+              <input 
+                type="email" 
+                placeholder="admin@optikcoin.com" 
+                className="w-full bg-gray-700/50 border border-red-600/30 px-4 py-3 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/20" 
+                value={formData.email} 
+                onChange={e => handleInputChange('email', e.target.value)} 
+                required 
+                disabled={isLoading}
+              />
+            </div>
+            
             <div className="relative">
-              <input type={showPassword ? 'text' : 'password'} placeholder="Password" className="w-full bg-gray-700/50 border border-red-600/30 px-4 py-3 pr-10 rounded-lg text-white" value={formData.password} onChange={e => setFormData({ ...formData, password: e.target.value })} required />
-              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">{showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}</button>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Admin Password</label>
+              <input 
+                type={showPassword ? 'text' : 'password'} 
+                placeholder="Enter admin password" 
+                className="w-full bg-gray-700/50 border border-red-600/30 px-4 py-3 pr-10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/20" 
+                value={formData.password} 
+                onChange={e => handleInputChange('password', e.target.value)} 
+                required 
+                disabled={isLoading}
+              />
+              <button 
+                type="button" 
+                onClick={() => setShowPassword(!showPassword)} 
+                className="absolute right-3 top-9 text-gray-400 hover:text-white transition-colors duration-200"
+                disabled={isLoading}
+              >
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
             </div>
-            <button type="submit" className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-semibold">{isLoading ? 'Checking...' : 'Continue'}</button>
+            
+            <button 
+              type="submit" 
+              className="w-full bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed text-white py-3 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center space-x-2"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <Loader className="w-5 h-5 animate-spin" />
+                  <span>Verifying...</span>
+                </>
+              ) : (
+                <span>Continue to 2FA</span>
+              )}
+            </button>
+            
+            <div className="text-center">
+              <p className="text-gray-500 text-xs">
+                Demo credentials: admin@optikcoin.com / OptikAdmin2025!
+              </p>
+            </div>
           </form>
         )}
 
@@ -122,12 +210,67 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
           <form onSubmit={handle2FASubmit} className="bg-gray-800/50 border border-red-700/30 rounded-xl p-8 space-y-6">
             <div className="text-center">
               <Smartphone className="w-10 h-10 text-red-400 mb-4 mx-auto bg-red-600/20 p-2 rounded-full" />
-              <h2 className="text-2xl font-bold text-white">Two-Factor Code</h2>
-              <p className="text-gray-400">Enter code: <span className="text-white font-mono">{generatedCode}</span></p>
+              <h2 className="text-2xl font-bold text-white">Two-Factor Authentication</h2>
+              <p className="text-gray-400 text-sm mt-2">Enter the 6-digit code from your authenticator app</p>
             </div>
-            {error && <p className="text-red-400 text-sm">{error}</p>}
-            <input type="text" maxLength={6} className="w-full bg-gray-700/50 border border-red-600/30 px-4 py-3 text-white text-center rounded-lg" value={formData.twoFactorCode} onChange={e => setFormData({ ...formData, twoFactorCode: e.target.value.replace(/\D/g, '') })} required />
-            <button type="submit" className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-semibold">{isLoading ? 'Verifying...' : 'Verify'}</button>
+            
+            {error && (
+              <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center space-x-3">
+                <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0" />
+                <p className="text-red-400 text-sm">{error}</p>
+              </div>
+            )}
+            
+            {success && (
+              <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg flex items-center space-x-3">
+                <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" />
+                <p className="text-green-400 text-sm">{success}</p>
+              </div>
+            )}
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">2FA Code</label>
+              <input 
+                type="text" 
+                maxLength={6} 
+                className="w-full bg-gray-700/50 border border-red-600/30 px-4 py-3 text-white text-center text-2xl tracking-widest rounded-lg placeholder-gray-400 focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/20" 
+                placeholder="000000"
+                value={formData.twoFactorCode} 
+                onChange={e => handleInputChange('twoFactorCode', e.target.value.replace(/\D/g, ''))} 
+                required 
+                disabled={isLoading}
+              />
+              {generatedCode && (
+                <p className="text-center text-sm text-green-400 mt-2">
+                  Demo code: <span className="font-mono font-bold">{generatedCode}</span>
+                </p>
+              )}
+            </div>
+            
+            <div className="flex space-x-3">
+              <button 
+                type="button"
+                onClick={() => setStep('credentials')}
+                className="flex-1 bg-gray-600/20 hover:bg-gray-600/30 text-gray-400 py-3 rounded-lg font-semibold transition-all duration-200"
+                disabled={isLoading}
+              >
+                Back
+              </button>
+              <button 
+                type="submit" 
+                className="flex-1 bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed text-white py-3 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center space-x-2"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader className="w-5 h-5 animate-spin" />
+                    <span>Verifying...</span>
+                  </>
+                ) : (
+                  <span>Verify & Continue</span>
+                )}
+              </button>
+            </div>
           </form>
         )}
 
@@ -136,13 +279,92 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
             <div className="text-center">
               <Shield className="w-10 h-10 text-red-400 mb-4 mx-auto bg-red-600/20 p-2 rounded-full" />
               <h2 className="text-2xl font-bold text-white">KYC Verification</h2>
-              <p className="text-gray-400 text-sm">Please complete the fields below to generate your wallet</p>
+              <p className="text-gray-400 text-sm mt-2">Complete identity verification to generate your admin wallet</p>
             </div>
-            {error && <p className="text-red-400 text-sm">{error}</p>}
-            <input type="text" placeholder="Full Name" className="w-full bg-gray-700/50 border border-red-600/30 px-4 py-3 text-white rounded-lg" value={formData.fullName} onChange={e => setFormData({ ...formData, fullName: e.target.value })} required />
-            <input type="text" placeholder="Country" className="w-full bg-gray-700/50 border border-red-600/30 px-4 py-3 text-white rounded-lg" value={formData.country} onChange={e => setFormData({ ...formData, country: e.target.value })} required />
-            <input type="text" placeholder="Government ID Number" className="w-full bg-gray-700/50 border border-red-600/30 px-4 py-3 text-white rounded-lg" value={formData.idNumber} onChange={e => setFormData({ ...formData, idNumber: e.target.value })} required />
-            <button type="submit" className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-semibold">{isLoading ? 'Verifying KYC...' : 'Download Wallet & Login'}</button>
+            
+            {error && (
+              <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center space-x-3">
+                <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0" />
+                <p className="text-red-400 text-sm">{error}</p>
+              </div>
+            )}
+            
+            {success && (
+              <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg flex items-center space-x-3">
+                <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" />
+                <p className="text-green-400 text-sm">{success}</p>
+              </div>
+            )}
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Full Name</label>
+              <input 
+                type="text" 
+                placeholder="John Doe" 
+                className="w-full bg-gray-700/50 border border-red-600/30 px-4 py-3 text-white rounded-lg placeholder-gray-400 focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/20" 
+                value={formData.fullName} 
+                onChange={e => handleInputChange('fullName', e.target.value)} 
+                required 
+                disabled={isLoading}
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Country</label>
+              <input 
+                type="text" 
+                placeholder="United States" 
+                className="w-full bg-gray-700/50 border border-red-600/30 px-4 py-3 text-white rounded-lg placeholder-gray-400 focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/20" 
+                value={formData.country} 
+                onChange={e => handleInputChange('country', e.target.value)} 
+                required 
+                disabled={isLoading}
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Government ID Number</label>
+              <input 
+                type="text" 
+                placeholder="123-45-6789" 
+                className="w-full bg-gray-700/50 border border-red-600/30 px-4 py-3 text-white rounded-lg placeholder-gray-400 focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/20" 
+                value={formData.idNumber} 
+                onChange={e => handleInputChange('idNumber', e.target.value)} 
+                required 
+                disabled={isLoading}
+              />
+            </div>
+            
+            <div className="flex space-x-3">
+              <button 
+                type="button"
+                onClick={() => setStep('2fa')}
+                className="flex-1 bg-gray-600/20 hover:bg-gray-600/30 text-gray-400 py-3 rounded-lg font-semibold transition-all duration-200"
+                disabled={isLoading}
+              >
+                Back
+              </button>
+              <button 
+                type="submit" 
+                className="flex-1 bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed text-white py-3 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center space-x-2"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader className="w-5 h-5 animate-spin" />
+                    <span>Verifying KYC...</span>
+                  </>
+                ) : (
+                  <span>Complete & Download Wallet</span>
+                )}
+              </button>
+            </div>
+            
+            <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+              <p className="text-blue-400 text-sm">
+                <strong>Note:</strong> Upon successful verification, your admin wallet keypair will be automatically downloaded. Keep this file secure as it contains your private keys.
+              </p>
+            </div>
           </form>
         )}
       </div>
