@@ -494,6 +494,30 @@ export default function MemeCreator() {
               </div>
             </div>
 
+            {/* Upgrade CTA - Only shown at launch step */}
+            {!hasAccess('token_creation') && (
+              <div className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 border border-purple-500/30 rounded-xl p-6 animate-pulse">
+                <div className="flex items-start space-x-4">
+                  <div className="bg-purple-600/30 p-3 rounded-lg">
+                    <Lock className="w-8 h-8 text-purple-400" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold text-white mb-2">Upgrade Required to Launch</h3>
+                    <p className="text-purple-300 mb-4">
+                      You've created an amazing meme coin! To launch it on the blockchain, you'll need to upgrade to our Ultimate Bundle.
+                    </p>
+                    <button
+                      onClick={() => setShowPaywall(true)}
+                      className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-3 rounded-lg transition-all duration-200 shadow-lg hover:shadow-purple-500/25 flex items-center justify-center space-x-2"
+                    >
+                      <Rocket className="w-5 h-5" />
+                      <span>Upgrade Now to Launch Your Token</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
               <div className="flex items-start space-x-3">
                 <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
