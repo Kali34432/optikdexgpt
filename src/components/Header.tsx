@@ -14,7 +14,7 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [showKYCModal, setShowKYCModal] = useState(false);
-  const { connected, publicKey } = useWallet();
+  const { connected, publicKey, disconnect } = useWallet();
 
   // Listen for custom event to open wallet download modal
   useEffect(() => {
@@ -112,8 +112,10 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
                 <span className="hidden md:inline">OPTIK Wallet</span>
               </button>
 
-              {/* Wallet Connect Button */}
-              <WalletMultiButton className="!bg-gradient-to-r !from-cyan-600 !to-blue-600 hover:!from-cyan-700 hover:!to-blue-700 !text-white !px-4 !py-2 !rounded-lg !font-medium !transition-all !duration-200 !flex !items-center !space-x-2 !shadow-lg hover:!shadow-cyan-500/25 !border-0 !text-sm" />
+              {/* Wallet Connect Button - Custom Styling */}
+              <div className="wallet-adapter-dropdown">
+                <WalletMultiButton className="!bg-gradient-to-r !from-cyan-600 !to-blue-600 hover:!from-cyan-700 hover:!to-blue-700 !text-white !px-4 !py-2 !rounded-lg !font-medium !transition-all !duration-200 !flex !items-center !space-x-2 !shadow-lg hover:!shadow-cyan-500/25 !border-0 !text-sm" />
+              </div>
 
               {/* Connected Wallet Info */}
               {connected && publicKey && (
