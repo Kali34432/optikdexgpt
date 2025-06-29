@@ -147,9 +147,9 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
               onClick={() => setIsMenuOpen(false)}
             />
             
-            {/* Menu Content */}
-            <div className="absolute right-4 top-16 w-80 bg-gray-800/95 backdrop-blur-md border border-cyan-700/30 rounded-xl shadow-2xl z-50 lg:w-72">
-              <div className="p-4">
+            {/* Menu Content - Fixed positioning and scrollable */}
+            <div className="absolute right-4 top-16 w-80 bg-gray-800/95 backdrop-blur-md border border-cyan-700/30 rounded-xl shadow-2xl z-50 lg:w-72 max-h-[calc(100vh-5rem)] flex flex-col">
+              <div className="p-4 flex-shrink-0">
                 {/* Wallet Status in Menu */}
                 {connected && publicKey && (
                   <div className="mb-4 p-3 bg-cyan-600/10 border border-cyan-500/20 rounded-lg">
@@ -166,7 +166,10 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
                 <h3 className="text-lg font-semibold text-white mb-4 border-b border-cyan-700/30 pb-2">
                   Navigation
                 </h3>
-                
+              </div>
+              
+              {/* Scrollable Navigation Items */}
+              <div className="flex-1 overflow-y-auto px-4 pb-4">
                 <div className="space-y-1">
                   {navigationItems.map((item) => {
                     const Icon = item.icon;
