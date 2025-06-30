@@ -1,7 +1,6 @@
 import { Buffer } from 'buffer';
 
 // Polyfill Buffer for browser environment - must be first
-globalThis.Buffer = Buffer;
 window.Buffer = Buffer;
 
 import { StrictMode } from 'react';
