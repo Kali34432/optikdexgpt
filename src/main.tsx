@@ -4,6 +4,10 @@ import App from './App.tsx';
 import './index.css';
 import { WalletProviderWrapper } from './components/WalletProviderWrapper';
 import { JupiterProvider } from './components/JupiterProvider';
+import { Buffer } from 'buffer';
+
+// Polyfill Buffer for browser environment
+globalThis.Buffer = Buffer;
 
 // Register service worker for PWA support (skip in StackBlitz environment)
 if ('serviceWorker' in navigator && !window.location.hostname.includes('stackblitz') && !window.location.hostname.includes('webcontainer')) {
