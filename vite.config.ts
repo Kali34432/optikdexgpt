@@ -31,5 +31,18 @@ export default defineConfig({
         ]
       }
     })
-  ]
+  ],
+  define: {
+    'process.env': {},
+    global: 'globalThis',
+    Buffer: 'globalThis.Buffer',
+  },
+  resolve: {
+    alias: {
+      buffer: 'buffer',
+    },
+  },
+  optimizeDeps: {
+    include: ['buffer'],
+  }
 });

@@ -41,6 +41,8 @@
   border: 1px solid rgba(56, 189, 248, 0.3);
   backdrop-filter: blur(8px);
   min-width: 200px;
+  max-height: 300px;
+  overflow-y: auto;
 }
 
 .wallet-adapter-dropdown-list-active {
@@ -143,4 +145,15 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(56, 189, 248, 0.5);
+}
+
+/* Navigation Menu Scrolling */
+.overflow-y-auto {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(56, 189, 248, 0.3) rgba(15, 23, 42, 0.5);
+}
+
+/* Ensure menu doesn't overflow viewport */
+.max-h-\[calc\(100vh-5rem\)\] {
+  max-height: calc(100vh - 5rem);
 }

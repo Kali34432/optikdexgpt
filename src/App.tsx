@@ -21,6 +21,15 @@ import AdminDashboard from './components/AdminDashboard';
 import OptikGPTSidebar from './components/OptikGPTSidebar';
 import WalletPage from './routes/WalletPage';
 import WalletDownloadModal from './components/WalletDownloadModal';
+import DEXLiquidity from './components/DEXLiquidity';
+import JupiterDEX from './components/JupiterDEX';
+// src/main.tsx or pages/_app.tsx (very top of file)
+import { Buffer } from 'buffer';
+if (typeof window !== 'undefined') {
+  window.Buffer = Buffer;
+}
+
+// ...rest of your app
 
 function App() {
   const [activeTab, setActiveTab] = useState('analytics');
@@ -112,6 +121,10 @@ function App() {
         return <Airdrop />;
       case 'wallet':
         return <WalletPage />;
+      case 'liquidity':
+        return <DEXLiquidity />;
+      case 'jupiter':
+        return <JupiterDEX />;
       default:
         return <AnalyticsDashboard />;
     }
