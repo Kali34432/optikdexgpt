@@ -6,7 +6,6 @@ export default defineConfig({
   plugins: [react()],
   define: {
     global: 'globalThis',
-    Buffer: 'Buffer',
     'process.env': {},
     'process.browser': true,
     'process.version': '"v18.0.0"',
