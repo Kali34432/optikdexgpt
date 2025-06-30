@@ -34,8 +34,8 @@ export default defineConfig({
   ],
   define: {
     'process.env': {},
-    'global': {},
-    'Buffer': ['buffer', 'Buffer']
+    'global': 'globalThis',
+    'Buffer': 'Buffer'
   },
   resolve: {
     alias: {
