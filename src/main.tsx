@@ -1,7 +1,8 @@
 import { Buffer } from 'buffer';
+if (typeof window !== 'undefined') {
+  window.Buffer = Buffer;
+}
 
-// Polyfill Buffer for browser environment - must be first
-window.Buffer = Buffer;
 
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
