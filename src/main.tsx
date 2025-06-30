@@ -11,7 +11,9 @@ import './index.css';
 import { WalletProviderWrapper } from './components/WalletProviderWrapper';
 import { JupiterProvider } from './components/JupiterProvider';
 
-// Register service worker for PWA support (skip in StackBlitz environment)
+// Register service worker for PWA support (skip in 
+window.Buffer= 'buffer'
+
 if ('serviceWorker' in navigator && !window.location.hostname.includes('stackblitz') && !window.location.hostname.includes('webcontainer')) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/wallet-sw-register.js')
