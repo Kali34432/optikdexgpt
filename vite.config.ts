@@ -1,8 +1,5 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { Buffer } from 'buffer';
-window.Buffer = Buffer;
-
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -14,6 +11,7 @@ export default defineConfig({
     'process.version': '"v18.0.0"',
     'process.versions': '{}',
     'process.nextTick': 'setTimeout',
+    'Buffer': 'globalThis.Buffer',
   },
   resolve: {
     alias: {
