@@ -1,5 +1,8 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { Buffer } from 'buffer';
+window.Buffer = Buffer;
+
 
 // https://vitejs.dev/config/
 export default defineConfig({
