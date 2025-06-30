@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy:check": "node scripts/deploy.js",
+    "deploy:build": "npm run build && npm run deploy:check"
   },
   "dependencies": {
     "@solana/spl-token": "^0.4.13",
