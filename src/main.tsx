@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 import { WalletProviderWrapper } from './components/WalletProviderWrapper';
+import { JupiterProvider } from './components/JupiterProvider';
 
 // Register service worker for PWA support (skip in StackBlitz environment)
 if ('serviceWorker' in navigator && !window.location.hostname.includes('stackblitz') && !window.location.hostname.includes('webcontainer')) {
@@ -22,7 +23,9 @@ if ('serviceWorker' in navigator && !window.location.hostname.includes('stackbli
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <WalletProviderWrapper>
-      <App />
+      <JupiterProvider>
+        <App />
+      </JupiterProvider>
     </WalletProviderWrapper>
   </StrictMode>
 );

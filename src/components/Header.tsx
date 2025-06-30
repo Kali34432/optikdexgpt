@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import { TrendingUp, MessageSquare, ArrowRightLeft, Wallet, Rocket, BarChart3, CreditCard, FileText, Map, Pickaxe, Coins, Gift, Menu, X, ExternalLink, Brain, Download, Shield, CheckCircle } from 'lucide-react';
+import { TrendingUp, MessageSquare, ArrowRightLeft, Wallet, Rocket, BarChart3, CreditCard, FileText, Map, Pickaxe, Coins, Gift, Menu, X, ExternalLink, Brain, Download, Shield, CheckCircle, Droplet } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import WalletDownloadModal from './WalletDownloadModal';
 
@@ -36,6 +36,7 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
     { id: 'creator', label: 'Meme Creator', icon: Rocket, type: 'internal' },
     { id: 'chart', label: 'Live Trading', icon: BarChart3, type: 'internal' },
     { id: 'swap', label: 'Token Swap', icon: ArrowRightLeft, type: 'internal' },
+    { id: 'liquidity', label: 'Liquidity Pools', icon: Droplet, type: 'internal' },
     { id: 'wallet', label: 'OPTIK Wallet', icon: Wallet, type: 'internal' },
     { id: 'subscription', label: 'Subscribe', icon: CreditCard, type: 'internal' },
     { id: 'whitepaper', label: 'Whitepaper', icon: FileText, type: 'internal' },
