@@ -39,10 +39,10 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      'buffer': 'buffer'
+      'Buffer': 'Buffer'
     }
   },
   optimizeDeps: {
-    include: ['buffer']
+    include: ['Buffer']
   }
 });
