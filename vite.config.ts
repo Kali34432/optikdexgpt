@@ -42,6 +42,6 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['buffer'],
+    include: ['buffer', '@supabase/supabase-js'],
   },
 });
