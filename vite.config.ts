@@ -34,15 +34,14 @@ export default defineConfig({
   ],
   define: {
     'process.env': {},
-    'global': 'globalThis',
-    'Buffer': 'Buffer'
+    global: {},
   },
   resolve: {
     alias: {
-      'Buffer': 'Buffer'
-    }
+      buffer: 'buffer',
+    },
   },
   optimizeDeps: {
-    include: ['Buffer']
+    include: ['buffer'],
   }
 });
