@@ -135,7 +135,7 @@ export default function TokenSwap() {
                 </div>
                 <div className="flex justify-between text-gray-400">
                   <span>Price Impact</span>
-                  <span className="text-green-400">< 0.1%</span>
+                  <span className="text-green-400">{"< 0.1%"}</span>
                 </div>
               </div>
             </div>
