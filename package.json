@@ -31,7 +31,7 @@
     "react-router-dom": "^6.20.1",
     "recharts": "^2.8.0",
     "@solana/spl-token-metadata": "^0.1.6",
-    "@metaplex-foundation/mpl-token-metadata": "^2.13.0",
+    "@metaplex-foundation/mpl-token-metadata": "^2.13.0"
 
   },
   "devDependencies": {
