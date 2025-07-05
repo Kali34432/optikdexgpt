@@ -226,77 +226,7 @@ export default function Login({ onLogin }: LoginProps) {
     return Object.keys(errors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
-
-    setIsLoading(true);
-    setError('');
-    setSuccess('');
-
-    try {
-      if (isLogin) {
-        // Sign in existing user
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: formData.email,
-          password: formData.password,
-        });
-
-        if (error) {
-          const errorMessage = parseSupabaseError(error);
-          setError(errorMessage);
-          
-          if (error.message.includes('Email not confirmed')) {
-            setShowEmailVerification(true);
-            setVerificationEmail(formData.email);
-          }
-          return;
-        }
-
-        if (data.user && data.user.email_confirmed_at) {
-          setSuccess('Login successful! Welcome back.');
-          setTimeout(() => onLogin(true), 1000);
-        } else {
-          setError('Please verify your email address before signing in.');
-          setShowEmailVerification(true);
-          setVerificationEmail(formData.email);
-        }
-      } else {
-        // Sign up new user
-        const { data, error } = await supabase.auth.signUp({
-          email: formData.email,
-          password: formData.password,
-          options: {
-            data: {
-              first_name: formData.firstName,
-              last_name: formData.lastName,
-            },
-            emailRedirectTo: `${window.location.origin}/auth/callback`
-          }
-        });
-
-        if (error) {
-          const errorMessage = parseSupabaseError(error);
-          setError(errorMessage);
-          return;
-        }
-
-        if (data.user) {
-          setSuccess('Account created successfully! Please check your email for a verification link.');
-          setShowEmailVerification(true);
-          setVerificationEmail(formData.email);
-        }
-      }
-    } catch (err: any) {
-      const errorMessage = parseSupabaseError(err);
-      setError(errorMessage);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  
 
   const handleResendVerification = async () => {
     if (!verificationEmail || resendCooldown > 0) return;
@@ -313,21 +243,75 @@ export default function Login({ onLogin }: LoginProps) {
           emailRedirectTo: `${window.location.origin}/auth/callback`
         }
       });
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  if (!validateForm()) return;
+
+  setIsLoading(true);
+  setError('');
+  setSuccess('');
+
+  try {
+    if (isLogin) {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password,
+      });
 
       if (error) {
         const errorMessage = parseSupabaseError(error);
         setError(errorMessage);
-      } else {
-        setSuccess('Verification email sent! Please check your inbox.');
-        setResendCooldown(60); // Set a default cooldown if none was set by error
+        if (error.message.includes('Email not confirmed')) {
+          setShowEmailVerification(true);
+          setVerificationEmail(formData.email);
+        }
+        return;
       }
-    } catch (err: any) {
-      const errorMessage = parseSupabaseError(err);
-      setError(errorMessage);
-    } finally {
-      setIsLoading(false);
+
+      if (data.user && data.user.email_confirmed_at) {
+        setSuccess('Login successful! Welcome back.');
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 2000);
+      } else {
+        setError('Please verify your email address before signing in.');
+        setShowEmailVerification(true);
+        setVerificationEmail(formData.email);
+      }
+
+    } else {
+      const { data, error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            first_name: formData.firstName,
+            last_name: formData.lastName,
+          },
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        }
+      });
+
+      if (error) {
+        const errorMessage = parseSupabaseError(error);
+        setError(errorMessage);
+        return;
+      }
+
+      if (data.user) {
+        setSuccess('Account created successfully! Please check your email for a verification link.');
+        setShowEmailVerification(true);
+        setVerificationEmail(formData.email);
+      }
     }
-  };
+  } catch (err: any) {
+    const errorMessage = parseSupabaseError(err);
+    setError(errorMessage);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const handleInputChange = (field: keyof FormData, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
