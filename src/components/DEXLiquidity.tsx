@@ -87,14 +87,6 @@ export default function DEXLiquidity() {
     }
     
     setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      alert(`Removed liquidity from ${selectedPool.token1.symbol}-${selectedPool.token2.symbol} pool`);
-      setIsLoading(false);
-      setActiveTab('pools');
-    }, 2000);
-  };
 
   return (
     <div className="max-w-6xl mx-auto space-y-8">
