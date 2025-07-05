@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, Send, X, Minimize2, Maximize2, Bot, User, Sparkles, RefreshCw, Trash2, Copy, Download, Lock, CreditCard, CheckCircle, AlertTriangle } from 'lucide-react';
+import {
+  MessageSquare, Send, X, Minimize2, Maximize2, Bot, User, Sparkles, RefreshCw, Trash2, Copy, Download, Lock, CreditCard, CheckCircle, AlertTriangle
+} from 'lucide-react';
 import { optikAI, OPTIK_BOTS, ChatMessage } from '../services/openai';
 
 export default function OptikGPTSidebar() {
@@ -13,8 +15,8 @@ export default function OptikGPTSidebar() {
   const [totalCost, setTotalCost] = useState(0);
   const [totalTokens, setTotalTokens] = useState(0);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [paymentStatus, setPaymentStatus] = useState<'pending' | 'processing' | 'success' | 'error'>('pending');
-  const [unlockedBots, setUnlockedBots] = useState<string[]>(['general']);
+  const [paymentStatus, setPaymentStatus] = useState('pending');
+  const [unlockedBots, setUnlockedBots] = useState(['general']);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -82,7 +84,6 @@ export default function OptikGPTSidebar() {
       );
 
       setMessages(prev => [...prev, response]);
-      
       if (response.cost) setTotalCost(prev => prev + response.cost);
       if (response.tokens) setTotalTokens(prev => prev + response.tokens);
 
@@ -130,7 +131,7 @@ export default function OptikGPTSidebar() {
         timestamp: m.timestamp
       }))
     };
-    
+
     const blob = new Blob([JSON.stringify(chatData, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -199,6 +200,7 @@ export default function OptikGPTSidebar() {
   const handleBotSelection = (botType: string) => {
     if (isBotLocked(botType)) {
       setShowPaymentModal(true);
+      setSelectedBot(botType);
     } else {
       setSelectedBot(botType);
     }
@@ -206,18 +208,16 @@ export default function OptikGPTSidebar() {
 
   const handlePayment = () => {
     setPaymentStatus('processing');
-    
-    // Simulate payment processing
-    setTimeout(() => someFunction(), 1000);
+    setTimeout(() => {
       setPaymentStatus('success');
-      
       // Add the bot to unlocked bots
       const newUnlockedBots = [...unlockedBots, selectedBot];
       setUnlockedBots(newUnlockedBots);
-      
       // Save to localStorage
       localStorage.setItem('unlockedBots', JSON.stringify(newUnlockedBots));
-      
+    }, 1000);
+  };
+
   const handlePaymentError = () => {
     setPaymentStatus('error');
     setTimeout(() => {
@@ -249,7 +249,6 @@ export default function OptikGPTSidebar() {
       <div className={`bg-gray-900/95 backdrop-blur-md border border-cyan-700/30 rounded-xl shadow-2xl transition-all duration-300 ${
         isMinimized ? 'w-80 h-16' : 'w-96 h-[calc(100vh-3rem)]'
       }`}>
-        
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-cyan-700/30">
           <div className="flex items-center space-x-3">
@@ -261,7 +260,6 @@ export default function OptikGPTSidebar() {
               <p className="text-cyan-400 text-xs">{OPTIK_BOTS[selectedBot].name}</p>
             </div>
           </div>
-          
           <div className="flex items-center space-x-2">
             <button
               onClick={() => setIsMinimized(!isMinimized)}
@@ -286,7 +284,6 @@ export default function OptikGPTSidebar() {
                 {Object.entries(OPTIK_BOTS).map(([key, bot]) => {
                   const isLocked = isBotLocked(key);
                   const isSelected = selectedBot === key;
-                  
                   return (
                     <button
                       key={key}
@@ -337,7 +334,6 @@ export default function OptikGPTSidebar() {
                       <Bot className="w-3 h-3" />
                     )}
                   </div>
-                  
                   <div className={`flex-1 ${message.role === 'user' ? 'text-right' : ''}`}>
                     <div className={`inline-block p-3 rounded-xl max-w-xs relative group ${
                       message.role === 'user'
@@ -349,7 +345,6 @@ export default function OptikGPTSidebar() {
                           <p key={idx} className="mb-1 last:mb-0">{line}</p>
                         ))}
                       </div>
-                      
                       {message.role === 'assistant' && (
                         <button
                           onClick={() => copyMessage(message.content)}
@@ -360,7 +355,6 @@ export default function OptikGPTSidebar() {
                         </button>
                       )}
                     </div>
-                    
                     <div className="flex items-center justify-between mt-1 text-xs text-gray-500">
                       <span>{message.timestamp.toLocaleTimeString()}</span>
                       {message.tokens && (
@@ -370,7 +364,6 @@ export default function OptikGPTSidebar() {
                   </div>
                 </div>
               ))}
-              
               {isLoading && (
                 <div className="flex items-start space-x-2">
                   <div className={`p-1.5 rounded-lg ${getBotColor(selectedBot)} border border-current/30`}>
@@ -401,7 +394,6 @@ export default function OptikGPTSidebar() {
                   </button>
                 ))}
               </div>
-
               {/* Input */}
               <div className="flex space-x-2">
                 <input
@@ -508,7 +500,6 @@ export default function OptikGPTSidebar() {
                       <p className="text-purple-300/80 text-xs">one-time purchase</p>
                     </div>
                   </div>
-
                   <div className="space-y-2 mb-4">
                     <div className="flex items-center text-sm">
                       <CheckCircle className="w-4 h-4 text-green-400 mr-3 flex-shrink-0" />
@@ -527,7 +518,6 @@ export default function OptikGPTSidebar() {
                       <span className="text-gray-300">Lifetime access</span>
                     </div>
                   </div>
-
                   <button
                     onClick={handlePayment}
                     className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2"
@@ -536,7 +526,6 @@ export default function OptikGPTSidebar() {
                     <span>Purchase for $19.99</span>
                   </button>
                 </div>
-
                 <div className="flex justify-between">
                   <button
                     onClick={() => setShowPaymentModal(false)}
@@ -545,7 +534,7 @@ export default function OptikGPTSidebar() {
                     Cancel
                   </button>
                   <button
-                    onClick={() => handlePaymentError()}
+                    onClick={handlePaymentError}
                     className="text-gray-400 hover:text-white text-sm"
                   >
                     Restore Purchases
