@@ -69,15 +69,16 @@ export default function DEXLiquidity() {
     
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      alert(`Added liquidity: ${token1Amount} ${selectedPool.token1.symbol} and ${token2Amount} ${selectedPool.token2.symbol}`);
-      setToken1Amount('');
-      setToken2Amount('');
-      setIsLoading(false);
-      setActiveTab('pools');
-    }, 2000);
-  };
+    if (data.session?.user) {
+      setStatus('success');
+      setMessage('Authentication successful! Redirecting to dashboard...');
+      delayedNavigate('/');
+    } 
+      
+    else {
+      setStatus('error');
+      setMessage('No session found. Please try signing in again.');
+    }
 
   const handleRemoveLiquidity = () => {
     if (!connected) {
