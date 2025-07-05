@@ -208,7 +208,7 @@ export default function OptikGPTSidebar() {
     setPaymentStatus('processing');
     
     // Simulate payment processing
-    setTimeout(() => {
+    setTimeout(() => someFunction(), 1000);
       setPaymentStatus('success');
       
       // Add the bot to unlocked bots
