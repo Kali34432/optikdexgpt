@@ -68,6 +68,11 @@ export default function TradingChart() {
         const high = Math.max(open, close) + Math.random() * 0.0005;
         const low = Math.min(open, close) - Math.random() * 0.0005;
         const volume = Math.random() * 1000000;
+        const delayedNavigate = (path: string, delay: number = 2000) => {
+          setTimeout(() => {
+          navigate(path, { replace: true });
+          }, delay);
+        };
         
         data.push({
           time: new Date(Date.now() - (99 - i) * 60000).toISOString(),
@@ -81,13 +86,6 @@ export default function TradingChart() {
       }
       return data;
     };
-
-    setIsLoading(true);
-    setTimeout(() => {
-      setChartData(generateData());
-      setIsLoading(false);
-    }, 1000);
-  }, [selectedToken, timeframe]);
 
   // Calculate total when price or amount changes
   useEffect(() => {
