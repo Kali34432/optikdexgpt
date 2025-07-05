@@ -218,14 +218,6 @@ export default function OptikGPTSidebar() {
       // Save to localStorage
       localStorage.setItem('unlockedBots', JSON.stringify(newUnlockedBots));
       
-      // Close modal after a delay
-      setTimeout(() => {
-        setShowPaymentModal(false);
-        setPaymentStatus('pending');
-      }, 2000);
-    }, 2000);
-  };
-
   const handlePaymentError = () => {
     setPaymentStatus('error');
     setTimeout(() => {
