@@ -7,7 +7,11 @@ export default function AuthCallback() {
   const navigate = useNavigate();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('');
-
+  const delayedNavigate = (path: string, delay: number = 2000) => {
+  setTimeout(() => {
+    navigate(path, { replace: true });
+  }, delay);
+};
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
@@ -59,47 +63,8 @@ export default function AuthCallback() {
             if (data.session?.user) {
               setStatus('success');
               setMessage('Email verified successfully! Redirecting to dashboard...');
-              
-              // Redirect to main app after 2 seconds
-              setTimeout(() => {
-                navigate('/', { replace: true });
-              }, 2000);
-            } else {
-              setStatus('error');
-              setMessage('No session found. Please try signing in again.');
-            }
-          }
-        } else {
-          // Handle other auth types or direct session check
-          const { data, error } = await supabase.auth.getSession();
-          
-          if (error) {
-            console.error('Auth callback error:', error);
-            setStatus('error');
-            setMessage(error.message);
-            return;
-          }
-
-          if (data.session?.user) {
-            setStatus('success');
-            setMessage('Authentication successful! Redirecting to dashboard...');
+            };
             
-            // Redirect to main app after 2 seconds
-            setTimeout(() => {
-              navigate('/', { replace: true });
-            }, 2000);
-          } else {
-            setStatus('error');
-            setMessage('No session found. Please try signing in again.');
-          }
-        }
-      } catch (err: any) {
-        console.error('Unexpected error:', err);
-        setStatus('error');
-        setMessage('An unexpected error occurred. Please try again.');
-      }
-    };
-
     handleAuthCallback();
   }, [navigate]);
 
