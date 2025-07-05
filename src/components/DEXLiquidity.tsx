@@ -50,43 +50,45 @@ const POOLS = [
 export default function DEXLiquidity() {
   const { connected } = useWallet();
   const { setVisible } = useWalletModal();
-  const [activeTab, setActiveTab] = useState<'pools' | 'add' | 'remove'>('pools');
+  const [activeTab, setActiveTab] = useState('pools');
   const [selectedPool, setSelectedPool] = useState(POOLS[0]);
   const [token1Amount, setToken1Amount] = useState('');
   const [token2Amount, setToken2Amount] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  // Add Liquidity Handler
   const handleAddLiquidity = () => {
     if (!connected) {
       setVisible(true);
       return;
     }
-    
     if (!token1Amount || !token2Amount) {
       alert('Please enter both token amounts');
       return;
     }
-    
     setIsLoading(true);
-    
-    if (data.session?.user) {
-      setStatus('success');
-      setMessage('Authentication successful! Redirecting to dashboard...');
-      delayedNavigate('/');
-    } 
-      
-    else {
-      setStatus('error');
-      setMessage('No session found. Please try signing in again.');
-    }
+    setTimeout(() => {
+      alert('Liquidity added! (mock)');
+      setIsLoading(false);
+      setToken1Amount('');
+      setToken2Amount('');
+      setActiveTab('pools');
+    }, 1200);
+  };
 
+  // Remove Liquidity Handler
   const handleRemoveLiquidity = () => {
     if (!connected) {
       setVisible(true);
       return;
     }
-    
     setIsLoading(true);
+    setTimeout(() => {
+      alert('Liquidity removed! (mock)');
+      setIsLoading(false);
+      setActiveTab('pools');
+    }, 1200);
+  };
 
   return (
     <div className="max-w-6xl mx-auto space-y-8">
@@ -217,13 +219,11 @@ export default function DEXLiquidity() {
               <p className="text-3xl font-bold text-blue-400">$3,950,000</p>
               <p className="text-gray-400 text-sm mt-2">Across all liquidity pools</p>
             </div>
-            
             <div className="bg-gray-700/30 rounded-xl p-6 border border-gray-600/30">
               <h3 className="text-lg font-semibold text-white mb-4">24h Trading Volume</h3>
               <p className="text-3xl font-bold text-green-400">$565,000</p>
               <p className="text-gray-400 text-sm mt-2">+12.5% from yesterday</p>
             </div>
-            
             <div className="bg-gray-700/30 rounded-xl p-6 border border-gray-600/30">
               <h3 className="text-lg font-semibold text-white mb-4">Total Fees Earned</h3>
               <p className="text-3xl font-bold text-purple-400">$28,250</p>
@@ -247,7 +247,6 @@ export default function DEXLiquidity() {
                 <span className="text-white font-medium">{selectedPool.token1.symbol}-{selectedPool.token2.symbol}</span>
               </div>
             </div>
-            
             {/* Pool Info */}
             <div className="bg-gray-700/20 rounded-lg p-4 mb-6">
               <div className="flex justify-between items-center mb-2">
@@ -263,7 +262,6 @@ export default function DEXLiquidity() {
                 <span className="text-white">1 {selectedPool.token1.symbol} = {(parseInt(selectedPool.token2Amount.replace(/,/g, '')) / parseInt(selectedPool.token1Amount.replace(/,/g, ''))).toFixed(2)} {selectedPool.token2.symbol}</span>
               </div>
             </div>
-            
             {/* Token 1 Input */}
             <div className="mb-4">
               <div className="flex items-center justify-between mb-2">
@@ -294,7 +292,6 @@ export default function DEXLiquidity() {
                 </div>
               </div>
             </div>
-            
             {/* Token 2 Input */}
             <div className="mb-6">
               <div className="flex items-center justify-between mb-2">
@@ -325,7 +322,6 @@ export default function DEXLiquidity() {
                 </div>
               </div>
             </div>
-            
             {/* Info Box */}
             <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg flex items-start space-x-3 mb-6">
               <Info className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
@@ -336,7 +332,6 @@ export default function DEXLiquidity() {
                 </p>
               </div>
             </div>
-            
             {/* Add Liquidity Button */}
             <button
               onClick={handleAddLiquidity}
@@ -375,7 +370,6 @@ export default function DEXLiquidity() {
                 <span className="text-white font-medium">{selectedPool.token1.symbol}-{selectedPool.token2.symbol}</span>
               </div>
             </div>
-            
             {/* Your Liquidity */}
             <div className="bg-gray-700/20 rounded-lg p-4 mb-6">
               <h3 className="text-white font-medium mb-3">Your Liquidity</h3>
@@ -392,7 +386,6 @@ export default function DEXLiquidity() {
                 <span className="text-white">0.00</span>
               </div>
             </div>
-            
             {/* Amount to Remove */}
             <div className="mb-6">
               <label className="block text-gray-400 text-sm mb-2">Amount to Remove</label>
@@ -408,7 +401,6 @@ export default function DEXLiquidity() {
                 <span className="text-white font-medium">100%</span>
               </div>
             </div>
-            
             {/* You Will Receive */}
             <div className="bg-gray-700/20 rounded-lg p-4 mb-6">
               <h3 className="text-white font-medium mb-3">You Will Receive</h3>
@@ -427,7 +419,6 @@ export default function DEXLiquidity() {
                 <span className="text-white">0.00</span>
               </div>
             </div>
-            
             {/* Warning */}
             <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg flex items-start space-x-3 mb-6">
               <AlertCircle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
@@ -438,7 +429,6 @@ export default function DEXLiquidity() {
                 </p>
               </div>
             </div>
-            
             {/* Remove Liquidity Button */}
             <button
               onClick={handleRemoveLiquidity}
@@ -460,12 +450,10 @@ export default function DEXLiquidity() {
             <h3 className="text-lg font-semibold text-white mb-3">Farming Rewards</h3>
             <p className="text-gray-400">Earn additional OPTK tokens by staking your LP tokens in farming pools</p>
           </div>
-          
           <div className="bg-gray-700/30 rounded-xl p-6 border border-gray-600/30">
             <h3 className="text-lg font-semibold text-white mb-3">Concentrated Liquidity</h3>
             <p className="text-gray-400">Provide liquidity in specific price ranges for higher capital efficiency</p>
           </div>
-          
           <div className="bg-gray-700/30 rounded-xl p-6 border border-gray-600/30">
             <h3 className="text-lg font-semibold text-white mb-3">Limit Orders</h3>
             <p className="text-gray-400">Set buy or sell orders at specific price points automatically</p>
