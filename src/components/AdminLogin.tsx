@@ -45,9 +45,6 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
     setError('');
     setSuccess('');
     
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
     if (formData.email === ADMIN_EMAIL && formData.password === ADMIN_PASSWORD) {
       const code = generate2FACode();
       setGeneratedCode(code);
@@ -65,9 +62,6 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
     setError('');
     setSuccess('');
     
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
     if (formData.twoFactorCode === generatedCode) {
       setSuccess('2FA verification successful! Please complete KYC verification.');
       setStep('kyc');
@@ -82,10 +76,7 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
     setIsLoading(true);
     setError('');
     setSuccess('');
-
-    try {
-      // Simulate KYC verification
-      await new Promise(resolve => setTimeout(resolve, 2000));
+  };
 
       // Mock KYC verification - in real app this would call an API
       if (formData.fullName && formData.country && formData.idNumber) {
